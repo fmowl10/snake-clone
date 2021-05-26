@@ -1,4 +1,5 @@
 CXXFLAGS = -Wall 
+CXX=g++
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS += -g
@@ -7,20 +8,23 @@ endif
 CXXFLAGS += `pkg-config --cflags ncurses`
 CXXLIBS += `pkg-config --libs ncurses`
 
-target = main
-SRCS= $(notdir $(wildcard *.cpp))
-OBJS = $(SRCS:.cpp=.o)
-HEADER = $(SRCS:.cpp=.h) 
-GCHES = $(SRCS:.cpp=.h.gch)
+SRC_DIR := src
 
-all : $(target)
+EXE := snake
 
-%.o : %.cpp  $(HEADER)
-	$(CXX) $(CXXFLAGS) $(CXXLIBS)-c $^
+SRC := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ := $(SRC:$(SRC_DIR)/%.cpp=%.o)
 
-$(target) : $(OBJS)
-	$(CXX) $(CXXFLAGS) $(CXXLIBS) $^ -o $@ 
 
-.PHONY: clean
-clean : 
-	rm -f $(OBJS) $(target) $(GCHES)
+.PHONY: all clean
+
+all: $(EXE)
+
+$(EXE): $(OBJ) 
+	$(CXX) $(CXXFLAGS) $^ $(CXXLIBS) -o $@
+
+%.o: $(SRC_DIR)/%.cpp 
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm $(OBJ) $(EXE)
