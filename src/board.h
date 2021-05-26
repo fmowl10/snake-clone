@@ -1,6 +1,5 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
-//#include "cursor.h"
 #include <exception>
 #include <ncurses.h>
 #include <vector>
