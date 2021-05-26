@@ -1,8 +1,11 @@
-#ifndef __BOARD_H__
-#define __BOARD_H__
 #include <exception>
 #include <ncurses.h>
 #include <vector>
+
+#include "snake.h"
+
+#ifndef __BOARD_H__
+#define __BOARD_H__
 
 #define WALL short(1)
 #define IMMUNE_WALL short(2)
@@ -12,14 +15,14 @@
 using namespace std;
 class Board
 {
-    vector<vector<int>> board;
+    vector<vector<short>> board;
     const int size;
     WINDOW *win;
-    //cursor user;
+    Snake user;
     static bool isInitColor;
 
     bool update();
-    bool print();
+    void print();
 
 public:
     Board(int size = 21);
