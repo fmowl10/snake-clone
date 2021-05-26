@@ -17,10 +17,12 @@ private:
     bool isColide = false;
 
 public:
-    Snake()
+    Snake(int size)
     {
         bodyLength = 3;
-        body.push_back(Point(0, 0));
+        for(int i = 0; i < 3; i++){
+            body.push_back(Point((size/2)+i, (size/2)));
+        }
     }
 
     void move();
