@@ -79,6 +79,7 @@ int main(int argc, char const *argv[])
                 break;
             }
             refresh();
+            timeout(-1);
             getch();
         }
         endwin();

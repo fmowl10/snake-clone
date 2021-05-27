@@ -15,6 +15,7 @@ private:
     vector<Point> body;
     Direct direct;
     bool isColide = false;
+    Point previousTail;
 
 public:
     Snake(int size)
@@ -30,7 +31,10 @@ public:
     void move();
 
     void changeDirect(Direct d) { direct = d; }
-    bool isDead() { return isColide; }
+    bool isDead();
+
+    void growthBody();
+    void decreaseBody();
 
     friend class Board;
 };

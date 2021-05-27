@@ -51,6 +51,7 @@ class Board
 {
     vector<vector<short>> board;
     Item items[3];
+    int tick[3] = {0, 0, 0};
     const int size;
     WINDOW *win;
     Snake user;

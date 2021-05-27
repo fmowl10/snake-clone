@@ -5,7 +5,7 @@ void Snake::move()
 {
 
     Point temp = body.front();
-
+    previousTail = body.back();
     if (direct == N)
     {
         temp.y--;
@@ -33,4 +33,24 @@ void Snake::move()
     }
 
     body.front() = temp;
+}
+
+
+void Snake::growthBody()
+{
+    body.push_back(previousTail);
+    bodyLength++;
+}
+
+void Snake::decreaseBody()
+{
+    body.pop_back();
+    bodyLength--;
+}
+
+bool Snake::isDead(){
+
+    if(isColide) return true;
+    if(bodyLength == 2) return true;
+    return false;
 }

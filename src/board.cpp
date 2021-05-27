@@ -144,7 +144,6 @@ bool Board::update()
                 int randX = (rand()%((size-1) - 1 + 1))+1;
                 int randY = (rand()%((size-1) - 1 + 1))+1;
                 int itemV = (rand() % 2) + 1;
-
                 switch (itemV)
                 {
                 case 1:
@@ -155,6 +154,7 @@ bool Board::update()
                 }
                 
                 items[i] = Item(Point(randX, randY), itemV);
+                tick[i] = 20;
             }
         }
 
@@ -163,8 +163,10 @@ bool Board::update()
             switch (items[i].itemV)
             {
             case 1:
+                user.growthBody();
                 break;
             case 2:
+                user.decreaseBody();
                 break;
             }
 
@@ -173,8 +175,17 @@ bool Board::update()
 
             break;
         }
-    }
 
+        if(tick[i] == 0 ) continue;
+        else
+        {
+            tick[i]--;
+            if(tick[i] == 0){
+                board[items[i].p.y][items[i].p.x] = NONE_COLOR;
+                items[i].itemV = 0;
+            }
+        }
+    }
 
     return true;
 }
