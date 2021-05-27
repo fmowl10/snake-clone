@@ -23,7 +23,7 @@ all: $(EXE)
 $(EXE): $(OBJ) 
 	$(CXX) $(CXXFLAGS) $^ $(CXXLIBS) -o $@
 
-%.o: $(SRC_DIR)/%.cpp 
+%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:

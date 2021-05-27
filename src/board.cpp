@@ -1,0 +1,169 @@
+#include "board.h"
+#include <algorithm>
+#include <cstdlib>
+#include <ncurses.h>
+
+const char *BoardMiniumSizeException::what()
+{
+    return "too small board size, minium is 21";
+}
+
+bool Board::isInitColor = false;
+
+void Board::initColor()
+{
+    if (isInitColor)
+        return;
+    start_color();
+    init_pair(WALL, 8, 8);
+    init_pair(IMMUNE_WALL, 0, 0);
+    init_pair(SNAKE_HEAD, 6, 6);
+    init_pair(SNAKE_BODY, 2, 2);
+}
+
+Board::Board(int size) : size(size), user(Snake(size))
+{
+    if (size < 20)
+        throw BoardMiniumSizeException();
+    win = newwin(size, size * 2, 2, 2);
+    if (win == nullptr)
+        throw exception();
+    keypad(win, true);
+
+    for (int i = 0; i < size; i++)
+    {
+        board.push_back({});
+        for (int j = 0; j < size; j++)
+        {
+            int value = 0;
+            if (i == 0 || i + 1 == size)
+            {
+                value = 1;
+            }
+            if (j == 0 || j + 1 == size)
+            {
+                value += 1;
+            }
+            board[i].push_back(value);
+            if (i == 0 || i + 1 == size)
+            {
+                value = 1;
+            }
+            value = 0;
+        }
+    }
+}
+
+int Board::loop()
+{
+    Board::initColor();
+    timeout(500);
+    noecho();
+
+    print();
+    while (true)
+    {
+        int input = getch();
+        Direct d = Direct::NONE;
+        switch (input)
+        {
+        case KEY_UP:
+        case 'w':
+            d = Direct::N;
+            break;
+        case KEY_DOWN:
+        case 's':
+            d = Direct::S;
+            break;
+        case KEY_LEFT:
+        case 'a':
+            d = Direct::W;
+            break;
+        case KEY_RIGHT:
+        case 'd':
+            d = Direct::E;
+            break;
+        case 'q':
+            return EXIT_SUCCESS;
+        }
+        if ((d ^ user.direct) == Direct::Opposite)
+        {
+            deadCase = DeadCase::OppositeWay;
+            return EXIT_FAILURE;
+        }
+        if (d != Direct::NONE)
+        {
+            user.changeDirect(d);
+        }
+        if (update())
+        {
+            print();
+        }
+        else
+        {
+            return EXIT_FAILURE;
+        }
+    }
+}
+
+bool Board::update()
+{
+    user.move();
+    if (user.isDead())
+    {
+        deadCase = DeadCase::ColideBody;
+        return false;
+    }
+    Point head = user.body[0];
+    if (1 <= board[head.y][head.x] && board[head.y][head.x] <= 2)
+    {
+        deadCase = DeadCase::ColideWall;
+        return false;
+    }
+    return true;
+}
+
+void Board::print()
+{
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            wattron(win, COLOR_PAIR(board[i][j]));
+            wmove(win, i, j * 2);
+            waddch(win, '.');
+            wmove(win, i, j * 2 + 1);
+            waddch(win, '.');
+            wattroff(win, COLOR_PAIR(board[i][j]));
+        }
+    }
+    for (int i = 0; i < user.bodyLength; i++)
+    {
+        short color = 0;
+        // head
+        if (i == 0)
+        {
+            color = SNAKE_HEAD;
+        }
+        else
+        {
+            color = SNAKE_BODY;
+        }
+
+        wattron(win, COLOR_PAIR(color));
+
+        wmove(win, user.body[i].y, user.body[i].x * 2);
+        waddch(win, ' ');
+
+        wmove(win, user.body[i].y, user.body[i].x * 2 + 1);
+        waddch(win, ' ');
+
+        wattroff(win, COLOR_PAIR(color));
+    }
+    wrefresh(win);
+}
+
+DeadCase Board::why()
+{
+    return deadCase;
+}

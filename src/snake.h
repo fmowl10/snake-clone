@@ -6,6 +6,8 @@
 
 using namespace std;
 
+#ifndef __SNAKE_H__
+#define __SNAKE_H__
 class Snake
 {
 private:
@@ -18,9 +20,11 @@ public:
     Snake(int size)
     {
         bodyLength = 3;
-        for(int i = 0; i < 3; i++){
-            body.push_back(Point((size/2)+i, (size/2)));
+        for (int i = 0; i < 3; i++)
+        {
+            body.push_back(Point((size / 2) + i, (size / 2)));
         }
+        direct = Direct::W;
     }
 
     void move();
@@ -30,3 +34,4 @@ public:
 
     friend class Board;
 };
+#endif
