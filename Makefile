@@ -14,6 +14,7 @@ EXE := snake
 
 SRC := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ := $(SRC:$(SRC_DIR)/%.cpp=%.o)
+DEP := $(OBJ:%.o=%.d)
 
 
 .PHONY: all clean
@@ -23,8 +24,10 @@ all: $(EXE)
 $(EXE): $(OBJ) 
 	$(CXX) $(CXXFLAGS) $^ $(CXXLIBS) -o $@
 
-%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -c $< -o $@
+%.o: $(SRC_DIR)/%.cpp $(DEP)
+	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -MMD -MP -c $< -o $@
+
+-include $(DEP)
 
 clean:
-	rm $(OBJ) $(EXE)
+	rm $(OBJ) $(EXE) $(DEP)
