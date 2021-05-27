@@ -8,10 +8,28 @@
 #define __BOARD_H__
 
 // ncurese color pair
+#define NONE_COLOR short(0)
 #define WALL short(1)
 #define IMMUNE_WALL short(2)
 #define SNAKE_HEAD short(3)
 #define SNAKE_BODY short(4)
+#define GROWTH_ITEM short(5)
+#define POISON_ITEM short(6)
+
+//item class
+class Item{
+    Point p;
+    int itemV;
+    
+    public:
+        Item(Point point, int v): p(point), itemV(v){}
+        Item(){ }
+
+    Item& operator=(const Item &item);
+
+    friend class Board;
+};
+
 
 // deadcase
 enum DeadCase
@@ -32,6 +50,7 @@ using namespace std;
 class Board
 {
     vector<vector<short>> board;
+    Item items[3];
     const int size;
     WINDOW *win;
     Snake user;

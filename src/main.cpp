@@ -9,6 +9,7 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
     initscr();
+    curs_set(0);
     mousemask(ALL_MOUSE_EVENTS, NULL);
     keypad(stdscr, true);
     cbreak();
