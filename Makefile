@@ -24,7 +24,7 @@ all: $(EXE)
 $(EXE): $(OBJ) 
 	$(CXX) $(CXXFLAGS) $^ $(CXXLIBS) -o $@
 
-%.o: $(SRC_DIR)/%.cpp $(DEP)
+%.o: $(SRC_DIR)/%.cpp  Makefile
 	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 -include $(DEP)
