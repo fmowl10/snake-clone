@@ -21,9 +21,8 @@ void Board::initColor()
     init_pair(SNAKE_BODY, 2, 2);
 }
 
-Board::Board(int size) : size(size)
+Board::Board(int size) : size(size), user(Snake(size))
 {
-    user = Snake();
     if (size < 20)
         throw BoardMiniumSizeException();
     win = newwin(size, size * 2, 2, 2);
@@ -62,35 +61,66 @@ int Board::loop()
     noecho();
 
     print();
-    int x = size / 2, y = size / 2;
-    wmove(win, y, x);
-    wrefresh(win);
     while (true)
     {
         int input = getch();
+        Direct d = Direct::NONE;
         switch (input)
         {
         case KEY_UP:
         case 'w':
-            user.changeDirect(Direct::N);
+            d = Direct::N;
             break;
         case KEY_DOWN:
         case 's':
-            user.changeDirect(Direct::S);
+            d = Direct::S;
             break;
         case KEY_LEFT:
         case 'a':
-            user.changeDirect(Direct::W);
+            d = Direct::W;
             break;
         case KEY_RIGHT:
         case 'd':
-            user.changeDirect(Direct::E);
+            d = Direct::E;
             break;
         case 'q':
             return EXIT_SUCCESS;
         }
-        wrefresh(win);
+        if ((d ^ user.direct) == Direct::Opposite)
+        {
+            deadCase = DeadCase::OppositeWay;
+            return EXIT_FAILURE;
+        }
+        if (d != Direct::NONE)
+        {
+            user.changeDirect(d);
+        }
+        if (update())
+        {
+            print();
+        }
+        else
+        {
+            return EXIT_FAILURE;
+        }
     }
+}
+
+bool Board::update()
+{
+    user.move();
+    if (user.isDead())
+    {
+        deadCase = DeadCase::ColideBody;
+        return false;
+    }
+    Point head = user.body[0];
+    if (1 <= board[head.y][head.x] && board[head.y][head.x] <= 2)
+    {
+        deadCase = DeadCase::ColideWall;
+        return false;
+    }
+    return true;
 }
 
 void Board::print()
@@ -101,13 +131,13 @@ void Board::print()
         {
             wattron(win, COLOR_PAIR(board[i][j]));
             wmove(win, i, j * 2);
-            waddch(win, ' ');
+            waddch(win, '.');
             wmove(win, i, j * 2 + 1);
-            waddch(win, ' ');
+            waddch(win, '.');
             wattroff(win, COLOR_PAIR(board[i][j]));
         }
     }
-    for (size_t i = 0; i < user.bodyLength; i++)
+    for (int i = 0; i < user.bodyLength; i++)
     {
         short color = 0;
         // head
@@ -130,4 +160,10 @@ void Board::print()
 
         wattroff(win, COLOR_PAIR(color));
     }
+    wrefresh(win);
+}
+
+DeadCase Board::why()
+{
+    return deadCase;
 }

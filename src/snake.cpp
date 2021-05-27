@@ -1,4 +1,5 @@
 #include "snake.h"
+#include <iostream>
 
 void Snake::move()
 {
@@ -7,22 +8,21 @@ void Snake::move()
 
     if (direct == N)
     {
-        temp.y++;
+        temp.y--;
     }
     else if (direct == S)
     {
-        temp.y--;
+        temp.y++;
     }
     else if (direct == W)
     {
-        temp.x++;
+        temp.x--;
     }
     else if (direct == E)
     {
-        temp.x--;
+        temp.x++;
     }
-
-    for (int i = 1; i < bodyLength; i++)
+    for (int i = bodyLength - 1; i >= 1; i--)
     {
         body.at(i) = body.at(i - 1);
         if (body.at(i) == temp)
