@@ -19,8 +19,8 @@ int main(int argc, char const *argv[])
     int col = getmaxx(stdscr);
     string welcome_message[MESSAGECOUNT] = {
         "welcome this is snake game",
-        "click this text to start",
-        "click this text to exit",
+        "click this text to start or press s",
+        "click this text to exit or press q",
     };
     for (int i = 0; i < MESSAGECOUNT; i++)
     {
@@ -30,8 +30,14 @@ int main(int argc, char const *argv[])
     while (true)
     {
         int ch = getch();
-        if (ch == KEY_MOUSE)
+        switch (ch)
         {
+        case 's':
+            goto Main;
+            break;
+        case 'q':
+            return EXIT_SUCCESS;
+        case KEY_MOUSE:
             MEVENT event;
             if (getmouse(&event) == OK && event.bstate == BUTTON1_CLICKED)
             {
@@ -46,12 +52,14 @@ int main(int argc, char const *argv[])
                 {
                     if (col / 2 - (int)welcome_message[1].length() / 2 <= event.x && event.x <= col / 2 + (int)welcome_message[1].length())
                     {
-                        break;
+                        goto Main;
                     }
                 }
             }
+            break;
         }
     }
+Main:
     try
     {
         clear();
@@ -78,6 +86,9 @@ int main(int argc, char const *argv[])
             default:
                 break;
             }
+            timeout(-1);
+            move(row / 2 + 1, col / 2);
+            addstr("quit to press any button");
             refresh();
             timeout(-1);
             getch();
