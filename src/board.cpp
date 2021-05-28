@@ -149,7 +149,6 @@ bool Board::update()
             {
                 int randX = (rand()%(21-2))+1;
                 int randY = (rand()%(21-2))+1;
-                cerr << randX<<' '<<randY<<endl;
                 int itemV = (rand() % 2) + 1;
                 switch (itemV)
                 {
