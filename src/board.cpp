@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <ncurses.h>
 #include <random>
+#include <chrono>
+#include <thread>
+
+using namespace chrono;
 
 Item& Item::operator=(const Item &item){
     p = item.p;
@@ -72,13 +76,14 @@ Board::Board(int size) : size(size), user(Snake(size))
 int Board::loop()
 {
     Board::initColor();
-    timeout(500);
+    timeout(200);
     noecho();
 
     print();
     while (true)
     {
         int input = getch();
+        flushinp();
         Direct d = Direct::NONE;
         switch (input)
         {
@@ -118,6 +123,7 @@ int Board::loop()
         {
             return EXIT_FAILURE;
         }
+        this_thread::sleep_for(milliseconds(200));
     }
 }
 
@@ -139,10 +145,11 @@ bool Board::update()
     for(int i = 0; i < 3; i++){
 
         if(items[i].itemV == 0){
-            if((rand() % 100) + 1 <=  50)
+            if((rand() % 100) + 1 <=  30)
             {
-                int randX = (rand()%((size-1) - 1 + 1))+1;
-                int randY = (rand()%((size-1) - 1 + 1))+1;
+                int randX = (rand()%(21-2))+1;
+                int randY = (rand()%(21-2))+1;
+                cerr << randX<<' '<<randY<<endl;
                 int itemV = (rand() % 2) + 1;
                 switch (itemV)
                 {
