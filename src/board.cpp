@@ -1,3 +1,13 @@
+/**
+ * @file board.cpp
+ * @author kim jea ha, kim jin seok
+ * @brief 
+ * @version 0.1
+ * @date 2021-05-29
+ * 
+ * @copyright Copyright (c) 2021 cocozo, fmowl
+ * 
+ */
 #include "board.h"
 #include <algorithm>
 #include <chrono>
@@ -12,6 +22,7 @@ Item &Item::operator=(const Item &item)
 {
     p = item.p;
     itemV = item.itemV;
+    tick = item.tick;
     return *this;
 }
 
@@ -35,6 +46,7 @@ void Board::initColor()
     init_pair(SNAKE_BODY, 2, 2);
     init_pair(GROWTH_ITEM, COLOR_YELLOW, COLOR_YELLOW);
     init_pair(POISON_ITEM, COLOR_MAGENTA, COLOR_MAGENTA);
+    init_pair(GATE, COLOR_BLUE, COLOR_BLUE);
 }
 
 Board::Board(int size) : size(size), user(Snake(size))
@@ -60,6 +72,7 @@ Board::Board(int size) : size(size), user(Snake(size))
             {
                 value += 1;
             }
+            if(value == 1) walls.push_back(Point(j, i));
             board[i].push_back(value);
             if (i == 0 || i + 1 == size)
             {
@@ -67,11 +80,6 @@ Board::Board(int size) : size(size), user(Snake(size))
             }
             value = 0;
         }
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        items[i] = Item(Point(0, 0), 0);
     }
 }
 
@@ -145,6 +153,70 @@ bool Board::update()
         return false;
     }
 
+    if(board[head.y][head.x] == GATE) 
+    {
+       Point exit = gate.checkExit(head, user.bodyLength);
+       // 벽이 위 가장자리인경우
+       if(exit.y== 0) 
+       {
+          user.changeDirect(Direct::S);
+          Point wayout = Point(exit.x, exit.y + 1);
+          user.body[0] = wayout;
+          
+       }
+       // 벽이 아래 가장자리인 경우
+       else if(exit.y == size - 1) 
+       {
+            user.changeDirect(Direct::N);
+            Point wayout = Point(exit.x, exit.y - 1);
+            user.body[0] = wayout;
+       }
+       // 벽이 왼쪽 가장자리인 경우
+       else if(exit.x == 0) 
+       {
+           user.changeDirect(Direct::E);
+           Point wayout = Point(exit.x + 1, exit.y);
+           user.body[0] = wayout;
+       } 
+       // 벽이 오른쪽 가장자리인 경우
+       else if(exit.x == size - 1) 
+       {
+           user.changeDirect(Direct::W);
+           Point wayout = Point(exit.x - 1, exit.y);
+           user.body[0] = wayout;
+       }
+
+    }
+
+    if(gate.gateV == 0)
+    {
+        if ((rand() % 100) + 1 <= 20)
+        {   
+            for(int i = 0; i < 2; i++)
+            {
+                int randWall = rand() % walls.size();
+                gate.gatePoints[i] = walls[randWall];
+                board[walls[randWall].y][walls[randWall].x] = GATE;
+            }
+            gate.gateV = 1;
+            gate.tick = 40;
+        }
+    }
+    else
+    {
+        gate.tick--;
+        if(gate.tick <= 0)
+        {
+            gate.gateV = NONE_COLOR;
+            for(int i = 0; i < 2; i++)
+            {
+                board[gate.gatePoints[i].y][gate.gatePoints[i].x] = WALL;
+                gate.gatePoints[i].x = 0;
+                gate.gatePoints[i].y = 0;
+            }
+        }
+    }
+
     for (int i = 0; i < 3; i++)
     {
 
@@ -164,8 +236,7 @@ bool Board::update()
                     board[randY][randX] = POISON_ITEM;
                 }
 
-                items[i] = Item(Point(randX, randY), itemV);
-                tick[i] = 20;
+                items[i] = Item(Point(randX, randY), itemV, 20);
             }
         }
 
@@ -183,21 +254,18 @@ bool Board::update()
 
             board[items[i].p.y][items[i].p.x] = NONE_COLOR;
             items[i].itemV = 0;
-
-            break;
         }
 
-        if (tick[i] == 0)
-            continue;
+        if (items[i].itemV == 0) continue;
         else
         {
-            tick[i]--;
-            if (tick[i] == 0)
+            items[i].tick--;
+            if (items[i].tick <= 0)
             {
                 board[items[i].p.y][items[i].p.x] = NONE_COLOR;
                 items[i].itemV = 0;
             }
-        }
+        }    
     }
 
     return true;
