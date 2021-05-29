@@ -73,6 +73,10 @@ compile_commands.json
 !.vscode/extensions.json
 *.code-workspace
 
+###meson builddir###
+.builddir/*
+*.code-workspace
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
