@@ -142,8 +142,9 @@ bool Board::update()
 {
     user.move();
     if (user.isDead())
-    {
-        deadCase = DeadCase::ColideBody;
+    {  
+        if(user.bodyLength <= 2) deadCase = DeadCase::ShortBody;
+        else deadCase = DeadCase::ColideBody;
         return false;
     }
     Point head = user.body[0];

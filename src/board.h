@@ -63,13 +63,15 @@ enum DeadCase
     ColideWall,
     ColideBody,
     OppositeWay,
+    ShortBody
 };
 
 // enum to data
-const string DeadMessage[3] = {
+const string DeadMessage[4] = {
     "you hit the wall",
     "you hit the body",
     "you move to your body",
+    "your body is too short"
 };
 
 using namespace std;

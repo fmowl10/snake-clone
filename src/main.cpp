@@ -83,6 +83,10 @@ Main:
                 move(row / 2, col / 2 - DeadMessage[DeadCase::OppositeWay].length() / 2);
                 addstr(DeadMessage[DeadCase::OppositeWay].c_str());
                 break;
+            case DeadCase::ShortBody:
+                move(row / 2, col / 2 - DeadMessage[DeadCase::ShortBody].length() / 2);
+                addstr(DeadMessage[DeadCase::ShortBody].c_str());
+                break;
             default:
                 break;
             }
