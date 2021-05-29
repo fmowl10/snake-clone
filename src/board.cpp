@@ -1,14 +1,15 @@
 #include "board.h"
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <ncurses.h>
 #include <random>
-#include <chrono>
 #include <thread>
 
 using namespace chrono;
 
-Item& Item::operator=(const Item &item){
+Item &Item::operator=(const Item &item)
+{
     p = item.p;
     itemV = item.itemV;
     return *this;
@@ -68,7 +69,8 @@ Board::Board(int size) : size(size), user(Snake(size))
         }
     }
 
-    for(int i = 0; i < 3; i++){
+    for (int i = 0; i < 3; i++)
+    {
         items[i] = Item(Point(0, 0), 0);
     }
 }
@@ -76,7 +78,7 @@ Board::Board(int size) : size(size), user(Snake(size))
 int Board::loop()
 {
     Board::initColor();
-    timeout(200);
+    timeout(50);
     noecho();
 
     print();
@@ -123,6 +125,7 @@ int Board::loop()
         {
             return EXIT_FAILURE;
         }
+        flushinp();
         this_thread::sleep_for(milliseconds(200));
     }
 }
@@ -142,13 +145,15 @@ bool Board::update()
         return false;
     }
 
-    for(int i = 0; i < 3; i++){
+    for (int i = 0; i < 3; i++)
+    {
 
-        if(items[i].itemV == 0){
-            if((rand() % 100) + 1 <=  30)
+        if (items[i].itemV == 0)
+        {
+            if ((rand() % 100) + 1 <= 30)
             {
-                int randX = (rand()%(21-2))+1;
-                int randY = (rand()%(21-2))+1;
+                int randX = (rand() % (size - 2)) + 1;
+                int randY = (rand() % (size - 2)) + 1;
                 int itemV = (rand() % 2) + 1;
                 switch (itemV)
                 {
@@ -158,14 +163,14 @@ bool Board::update()
                 case 2:
                     board[randY][randX] = POISON_ITEM;
                 }
-                
+
                 items[i] = Item(Point(randX, randY), itemV);
                 tick[i] = 20;
             }
         }
 
-        if(head == items[i].p)
-        {  
+        if (head == items[i].p)
+        {
             switch (items[i].itemV)
             {
             case 1:
@@ -182,11 +187,13 @@ bool Board::update()
             break;
         }
 
-        if(tick[i] == 0 ) continue;
+        if (tick[i] == 0)
+            continue;
         else
         {
             tick[i]--;
-            if(tick[i] == 0){
+            if (tick[i] == 0)
+            {
                 board[items[i].p.y][items[i].p.x] = NONE_COLOR;
                 items[i].itemV = 0;
             }
