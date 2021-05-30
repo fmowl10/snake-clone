@@ -73,7 +73,8 @@ Board::Board(int size) : size(size), user(Snake(size))
             {
                 value += 1;
             }
-            if(value == 1) walls.push_back(Point(j, i));
+            if (value == 1)
+                walls.push_back(Point(j, i));
             board[i].push_back(value);
             if (i == 0 || i + 1 == size)
             {
@@ -81,6 +82,12 @@ Board::Board(int size) : size(size), user(Snake(size))
             }
             value = 0;
         }
+    }
+    // 1자 벽
+    for (int i = 0; i < size / 2; i++)
+    {
+        board[5 + i][size / 2 + 3] = WALL;
+        walls.push_back(Point(size / 2 + 3, 5 + i));
     }
 }
 
