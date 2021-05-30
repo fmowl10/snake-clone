@@ -71,8 +71,7 @@ const string DeadMessage[4] = {
     "you hit the wall",
     "you hit the body",
     "you move to your body",
-    "your body is too short"
-};
+    "your body is too short"};
 
 using namespace std;
 class Board
@@ -86,11 +85,16 @@ class Board
     WINDOW *win;
     Snake user;
     static bool isInitColor;
+    DeadCase deadCase;
 
     bool update();
     void print();
-
-    DeadCase deadCase;
+    void createItem(int num);
+    void consumeItem(int num);
+    void consumeItemTick();
+    void enterGate(Point &);
+    void createGate(int tick);
+    void consumeGateTick();
 
 public:
     Board(int size = 21);
