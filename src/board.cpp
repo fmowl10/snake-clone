@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2021-05-29
  * 
- * @copyright Copyright (c) 2021 cocozo, fmowl
+ * @copyright Copyright (c) 2021 cocozo fmowl
  * 
  */
 #include "board.h"
@@ -18,6 +18,12 @@
 
 using namespace chrono;
 
+/**
+ * @brief operator 
+ * 
+ * @param item 
+ * @return Item& 
+ */
 Item &Item::operator=(const Item &item)
 {
     p = item.p;
@@ -26,6 +32,11 @@ Item &Item::operator=(const Item &item)
     return *this;
 }
 
+/**
+ * @brief returns exception message
+ * 
+ * @return const char* 
+ */
 const char *BoardMiniumSizeException::what()
 {
     return "too small board size, minium is 21";
@@ -33,6 +44,10 @@ const char *BoardMiniumSizeException::what()
 
 bool Board::isInitColor = false;
 
+/**
+ * @brief singletone method
+ * 
+ */
 void Board::initColor()
 {
     if (isInitColor)
@@ -50,6 +65,11 @@ void Board::initColor()
     isInitColor = true;
 }
 
+/**
+ * @brief Construct a new Board:: Board object
+ * 
+ * @param size 
+ */
 Board::Board(int size) : size(size), user(Snake(size))
 {
     if (size < 20)
@@ -91,6 +111,11 @@ Board::Board(int size) : size(size), user(Snake(size))
     }
 }
 
+/**
+ * @brief get input from user
+ * 
+ * @return int 
+ */
 int Board::loop()
 {
     Board::initColor();
@@ -146,6 +171,12 @@ int Board::loop()
     }
 }
 
+/**
+ * @brief event handler
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Board::update()
 {
     user.move();
@@ -207,6 +238,10 @@ bool Board::update()
     return true;
 }
 
+/**
+ * @brief print current state
+ * 
+ */
 void Board::print()
 {
     for (int i = 0; i < size; i++)
@@ -247,6 +282,11 @@ void Board::print()
     wrefresh(win);
 }
 
+/**
+ * @brief returns snake deadcase
+ * 
+ * @return DeadCase 
+ */
 DeadCase Board::why()
 {
     return deadCase;

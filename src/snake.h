@@ -1,3 +1,13 @@
+/**
+ * @file snake.h
+ * @author kim jae ha 
+ * @brief snake class 
+ * @version 0.1
+ * @date 2021-05-30
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include "direct.h"
 #include "point.h"
 #include <iostream>
@@ -8,6 +18,11 @@ using namespace std;
 
 #ifndef __SNAKE_H__
 #define __SNAKE_H__
+
+/**
+ * @brief Snake class
+ * 
+ */
 class Snake
 {
 private:
@@ -18,6 +33,11 @@ private:
     Point previousTail;
 
 public:
+    /**
+    * @brief Construct a new Snake object
+    * 
+    * @param size 
+    */
     Snake(int size)
     {
         bodyLength = 3;
