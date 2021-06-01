@@ -56,13 +56,14 @@ void Board::initColor()
     if (isInitColor)
         return;
     start_color();
+    use_default_colors();
     init_color(6, 1000, 1000, 0);
-    init_color(2, 0, 1000, 0);
+    init_color(1, 1000, 500, 0);
     init_pair(WALL, 8, 8);
     init_pair(IMMUNE_WALL, 0, 0);
     init_pair(SNAKE_HEAD, 6, 6);
-    init_pair(SNAKE_BODY, 2, 2);
-    init_pair(GROWTH_ITEM, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(SNAKE_BODY, 1, 1);
+    init_pair(GROWTH_ITEM, COLOR_GREEN, COLOR_GREEN);
     init_pair(POISON_ITEM, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(GATE, COLOR_BLUE, COLOR_BLUE);
     isInitColor = true;
