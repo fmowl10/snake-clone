@@ -1,3 +1,14 @@
+/**
+ * @file board.h
+ * @author Kim Jae Ha Kim Jin Seok
+ * @brief 
+ * @version 0.1
+ * @date 2021-05-30
+ * 
+ * @copyright Copyright (c) 2021 cocozo fmowl
+ * 
+ */
+
 #include <exception>
 #include <ncurses.h>
 #include <vector>
@@ -18,7 +29,7 @@
 #define GATE short(7)
 
 /**
- * @brief gate class
+ * @brief Gate class
  * 
  */
 class Gate
@@ -27,35 +38,78 @@ class Gate
     int tick;
     int gateV;
 
-    public:
-        
-        Gate(){ gateV = 0; tick = 40; }
-        Gate(Point g1, Point g2, int v, int t): gateV(0), tick(t) { gatePoints[0] = g1; gatePoints[1] = g2; }
-        
-        Point checkExit(Point p, int len)
-        {   
-            tick += len;
-            if(p == gatePoints[0]) return gatePoints[1];
-            else return gatePoints[0];
-        }
+public:
+    /**
+    * @brief Construct a new Gate object
+    * 
+    */
+    Gate()
+    {
+        gateV = 0;
+        tick = 10;
+    }
+    /**
+     * @brief Construct a new Gate object
+     * 
+     * @param g1 
+     * @param g2 
+     * @param v 
+     * @param t 
+     */
+    Gate(Point g1, Point g2, int v, int t) : gateV(0), tick(t)
+    {
+        gatePoints[0] = g1;
+        gatePoints[1] = g2;
+    }
+
+    /**
+     * @brief check is exit
+     * 
+     * @param p 
+     * @param len 
+     * @return Point 
+     */
+    Point checkExit(Point p, int len)
+    {
+        tick += len;
+        if (p == gatePoints[0])
+            return gatePoints[1];
+        else
+            return gatePoints[0];
+    }
 
     friend class Board;
 };
 
-//item class
-class Item{
+/**
+ * @brief Item class
+ * 
+ */
+class Item
+{
     Point p;
     int itemV, tick;
-    
-    public:
-        Item(Point point, int v, int t = 20): p(point), itemV(v), tick(t){}
-        Item(){p = Point(0, 0); itemV = 0; tick = 20;}
 
-    Item& operator=(const Item &item);
+public:
+    /**
+     * @brief Construct a new Item object
+     * 
+     * @param point 
+     * @param v 
+     * @param t 
+     */
+    Item(Point point, int v, int t = 20) : p(point), itemV(v), tick(t) {}
+    Item()
+    {
+        p = Point(0, 0);
+        itemV = 0;
+        tick = 20;
+    }
+
+    Item &operator=(const Item &item);
 
     friend class Board;
 };
-
 
 // deadcase
 enum DeadCase
@@ -71,8 +125,7 @@ const string DeadMessage[4] = {
     "you hit the wall",
     "you hit the body",
     "you move to your body",
-    "your body is too short"
-};
+    "your body is too short"};
 
 using namespace std;
 class Board
@@ -86,11 +139,16 @@ class Board
     WINDOW *win;
     Snake user;
     static bool isInitColor;
+    DeadCase deadCase;
 
     bool update();
     void print();
-
-    DeadCase deadCase;
+    void createItem(int num);
+    void consumeItem(int num);
+    void consumeItemTick();
+    void enterGate(Point &);
+    void createGate(int tick);
+    void consumeGateTick();
 
 public:
     Board(int size = 21);

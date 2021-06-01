@@ -5,7 +5,7 @@
  * @version 0.1
  * @date 2021-05-29
  * 
- * @copyright Copyright (c) 2021 cocozo, fmowl
+ * @copyright Copyright (c) 2021 cocozo fmowl
  * 
  */
 #include "board.h"
@@ -18,6 +18,12 @@
 
 using namespace chrono;
 
+/**
+ * @brief operator 
+ * 
+ * @param item 
+ * @return Item& 
+ */
 Item &Item::operator=(const Item &item)
 {
     p = item.p;
@@ -26,6 +32,11 @@ Item &Item::operator=(const Item &item)
     return *this;
 }
 
+/**
+ * @brief returns exception message
+ * 
+ * @return const char* 
+ */
 const char *BoardMiniumSizeException::what()
 {
     return "too small board size, minium is 21";
@@ -33,6 +44,10 @@ const char *BoardMiniumSizeException::what()
 
 bool Board::isInitColor = false;
 
+/**
+ * @brief singletone method
+ * 
+ */
 void Board::initColor()
 {
     if (isInitColor)
@@ -47,8 +62,14 @@ void Board::initColor()
     init_pair(GROWTH_ITEM, COLOR_YELLOW, COLOR_YELLOW);
     init_pair(POISON_ITEM, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(GATE, COLOR_BLUE, COLOR_BLUE);
+    isInitColor = true;
 }
 
+/**
+ * @brief Construct a new Board:: Board object
+ * 
+ * @param size 
+ */
 Board::Board(int size) : size(size), user(Snake(size))
 {
     if (size < 20)
@@ -72,7 +93,8 @@ Board::Board(int size) : size(size), user(Snake(size))
             {
                 value += 1;
             }
-            if(value == 1) walls.push_back(Point(j, i));
+            if (value == 1)
+                walls.push_back(Point(j, i));
             board[i].push_back(value);
             if (i == 0 || i + 1 == size)
             {
@@ -81,8 +103,19 @@ Board::Board(int size) : size(size), user(Snake(size))
             value = 0;
         }
     }
+    // 1자 벽
+    for (int i = 0; i < size / 2; i++)
+    {
+        board[5 + i][size / 2 + 3] = WALL;
+        walls.push_back(Point(size / 2 + 3, 5 + i));
+    }
 }
 
+/**
+ * @brief get input from user
+ * 
+ * @return int 
+ */
 int Board::loop()
 {
     Board::initColor();
@@ -138,13 +171,21 @@ int Board::loop()
     }
 }
 
+/**
+ * @brief event handler
+ * 
+ * @return true 
+ * @return false 
+ */
 bool Board::update()
 {
     user.move();
     if (user.isDead())
-    {  
-        if(user.bodyLength <= 2) deadCase = DeadCase::ShortBody;
-        else deadCase = DeadCase::ColideBody;
+    {
+        if (user.bodyLength <= 2)
+            deadCase = DeadCase::ShortBody;
+        else
+            deadCase = DeadCase::ColideBody;
         return false;
     }
     Point head = user.body[0];
@@ -154,70 +195,27 @@ bool Board::update()
         return false;
     }
 
-    if(board[head.y][head.x] == GATE) 
+    // event snake enter a gate
+    if (board[head.y][head.x] == GATE)
     {
-       Point exit = gate.checkExit(head, user.bodyLength);
-       // 벽이 위 가장자리인경우
-       if(exit.y== 0) 
-       {
-          user.changeDirect(Direct::S);
-          Point wayout = Point(exit.x, exit.y + 1);
-          user.body[0] = wayout;
-          
-       }
-       // 벽이 아래 가장자리인 경우
-       else if(exit.y == size - 1) 
-       {
-            user.changeDirect(Direct::N);
-            Point wayout = Point(exit.x, exit.y - 1);
-            user.body[0] = wayout;
-       }
-       // 벽이 왼쪽 가장자리인 경우
-       else if(exit.x == 0) 
-       {
-           user.changeDirect(Direct::E);
-           Point wayout = Point(exit.x + 1, exit.y);
-           user.body[0] = wayout;
-       } 
-       // 벽이 오른쪽 가장자리인 경우
-       else if(exit.x == size - 1) 
-       {
-           user.changeDirect(Direct::W);
-           Point wayout = Point(exit.x - 1, exit.y);
-           user.body[0] = wayout;
-       }
-
+        enterGate(head);
     }
 
-    if(gate.gateV == 0)
+    // event 게이트가 존자 하지 않을 경우
+    if (gate.gateV == 0)
     {
         if ((rand() % 100) + 1 <= 20)
-        {   
-            for(int i = 0; i < 2; i++)
-            {
-                int randWall = rand() % walls.size();
-                gate.gatePoints[i] = walls[randWall];
-                board[walls[randWall].y][walls[randWall].x] = GATE;
-            }
-            gate.gateV = 1;
-            gate.tick = 40;
+        {
+            createGate(20);
         }
     }
+    // event 게이트 존재시
     else
     {
-        gate.tick--;
-        if(gate.tick <= 0)
-        {
-            gate.gateV = NONE_COLOR;
-            for(int i = 0; i < 2; i++)
-            {
-                board[gate.gatePoints[i].y][gate.gatePoints[i].x] = WALL;
-                gate.gatePoints[i].x = 0;
-                gate.gatePoints[i].y = 0;
-            }
-        }
+        consumeGateTick();
     }
 
+    //  event item attribute
     for (int i = 0; i < 3; i++)
     {
 
@@ -225,53 +223,25 @@ bool Board::update()
         {
             if ((rand() % 100) + 1 <= 30)
             {
-                int randX = (rand() % (size - 2)) + 1;
-                int randY = (rand() % (size - 2)) + 1;
-                int itemV = (rand() % 2) + 1;
-                switch (itemV)
-                {
-                case 1:
-                    board[randY][randX] = GROWTH_ITEM;
-                    break;
-                case 2:
-                    board[randY][randX] = POISON_ITEM;
-                }
-
-                items[i] = Item(Point(randX, randY), itemV, 20);
+                createItem(i);
             }
         }
 
         if (head == items[i].p)
         {
-            switch (items[i].itemV)
-            {
-            case 1:
-                user.growthBody();
-                break;
-            case 2:
-                user.decreaseBody();
-                break;
-            }
-
-            board[items[i].p.y][items[i].p.x] = NONE_COLOR;
-            items[i].itemV = 0;
+            consumeItem(i);
         }
-
-        if (items[i].itemV == 0) continue;
-        else
-        {
-            items[i].tick--;
-            if (items[i].tick <= 0)
-            {
-                board[items[i].p.y][items[i].p.x] = NONE_COLOR;
-                items[i].itemV = 0;
-            }
-        }    
     }
+
+    consumeItemTick();
 
     return true;
 }
 
+/**
+ * @brief print current state
+ * 
+ */
 void Board::print()
 {
     for (int i = 0; i < size; i++)
@@ -312,7 +282,236 @@ void Board::print()
     wrefresh(win);
 }
 
+/**
+ * @brief returns snake deadcase
+ * 
+ * @return DeadCase 
+ */
 DeadCase Board::why()
 {
     return deadCase;
+}
+
+/**
+ * @brief create item
+ * 
+ * @param num 
+ */
+void Board::createItem(int num)
+{
+    int randX = 0;
+    int randY = 0;
+    while (true)
+    {
+        randX = (rand() % (size - 2)) + 1;
+        randY = (rand() % (size - 2)) + 1;
+
+        // lambda 식에 맞는 wall이 존재하면 못나감
+        auto i = find_if(walls.begin(), walls.end(), [randX, randY](Point &x)
+                         { return x == Point(randX, randY); });
+        if (i == walls.end())
+        {
+            break;
+        }
+    }
+    int itemV = (rand() % 2) + 1;
+    switch (itemV)
+    {
+    case 1:
+        board[randY][randX] = GROWTH_ITEM;
+        break;
+    case 2:
+        board[randY][randX] = POISON_ITEM;
+    }
+
+    items[num] = Item(Point(randX, randY), itemV, 20);
+}
+
+/**
+ * @brief consume item
+ * 
+ * @param num 
+ */
+void Board::consumeItem(int num)
+{
+    switch (items[num].itemV)
+    {
+    case 1:
+        user.growthBody();
+        break;
+    case 2:
+        user.decreaseBody();
+        break;
+    }
+
+    board[items[num].p.y][items[num].p.x] = NONE_COLOR;
+    items[num].itemV = 0;
+}
+
+/**
+ * @brief consume item tick
+ * 
+ */
+void Board::consumeItemTick()
+{
+    for (int i = 0; i < 3; i++)
+    {
+        if (items[i].itemV == 0)
+            continue;
+        else
+        {
+            items[i].tick--;
+            if (items[i].tick <= 0)
+            {
+                board[items[i].p.y][items[i].p.x] = NONE_COLOR;
+                items[i].itemV = 0;
+            }
+        }
+    }
+}
+
+/**
+ * @brief set snake's way out and direction
+ * 
+ * @param head 
+ */
+void Board::enterGate(Point &head)
+{
+    Point exit = gate.checkExit(head, user.bodyLength);
+    Point wayout;
+    // 벽이 위 가장자리인경우
+    if (exit.y == 0)
+    {
+        user.changeDirect(Direct::S);
+        wayout = Point(exit.x, exit.y + 1);
+    }
+    // 벽이 아래 가장자리인 경우
+    else if (exit.y == size - 1)
+    {
+        user.changeDirect(Direct::N);
+        wayout = Point(exit.x, exit.y - 1);
+    }
+    // 벽이 왼쪽 가장자리인 경우
+    else if (exit.x == 0)
+    {
+        user.changeDirect(Direct::E);
+        wayout = Point(exit.x + 1, exit.y);
+    }
+    // 벽이 오른쪽 가장자리인 경우
+    else if (exit.x == size - 1)
+    {
+        user.changeDirect(Direct::W);
+        wayout = Point(exit.x - 1, exit.y);
+    }
+    //벽이 가장자리가 아닐경우
+    else
+    {
+        // user 의 방향 대로 나올 수 있는 경우
+        switch (user.direct)
+        {
+        case Direct::N:
+            if (board[exit.y - 1][exit.x] != WALL)
+            {
+                wayout = Point(exit.x, exit.y - 1);
+            }
+            break;
+        case Direct::S:
+            if (board[exit.y + 1][exit.x] != WALL)
+            {
+                wayout = Point(exit.x, exit.y + 1);
+            }
+            break;
+        case Direct::E:
+            if (board[exit.y][exit.x + 1] != WALL)
+            {
+                wayout = Point(exit.x + 1, exit.y);
+            }
+            break;
+        case Direct::W:
+            if (board[exit.y][exit.x - 1] != WALL)
+            {
+                wayout = Point(exit.x - 1, exit.y);
+            }
+            break;
+        default:
+            break;
+        }
+
+        //user의 방향대로 나갈 수 없을 경우, 시계방향으로 회전
+        if (wayout == Point(0, 0))
+        {
+            switch (user.direct)
+            {
+            case Direct::N:
+                if (board[exit.y][exit.x + 1] != WALL)
+                {
+                    wayout = Point(exit.x + 1, exit.y);
+                    user.changeDirect(Direct::E);
+                }
+                break;
+            case Direct::S:
+                if (board[exit.y][exit.x - 1] != WALL)
+                {
+                    wayout = Point(exit.x - 1, exit.y);
+                    user.changeDirect(Direct::W);
+                }
+                break;
+            case Direct::E:
+                if (board[exit.y + 1][exit.x] != WALL)
+                {
+                    wayout = Point(exit.x, exit.y + 1);
+                    user.changeDirect(Direct::S);
+                }
+                break;
+            case Direct::W:
+                if (board[exit.y - 1][exit.x] != WALL)
+                {
+                    wayout = Point(exit.x, exit.y - 1);
+                    user.changeDirect(Direct::N);
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    user.body[0] = wayout;
+}
+
+/**
+ * @brief create gate
+ * 
+ * @param tick 
+ */
+void Board::createGate(int tick)
+{
+    for (int i = 0; i < 2; i++)
+    {
+        int randWall = rand() % walls.size();
+        gate.gatePoints[i] = walls[randWall];
+        board[walls[randWall].y][walls[randWall].x] = GATE;
+    }
+    gate.gateV = 1;
+    gate.tick = tick;
+}
+
+/**
+ * @brief consume gate's tick 
+ * 
+ */
+void Board::consumeGateTick()
+{
+    gate.tick--;
+    if (gate.tick <= 0)
+    {
+        gate.gateV = NONE_COLOR;
+        for (int i = 0; i < 2; i++)
+        {
+            board[gate.gatePoints[i].y][gate.gatePoints[i].x] = WALL;
+            gate.gatePoints[i].x = 0;
+            gate.gatePoints[i].y = 0;
+        }
+    }
 }
