@@ -2,9 +2,17 @@
 #include <cstring>
 #include <iostream>
 #include <ncurses.h>
-#define MESSAGECOUNT 3
 
+#define MESSAGECOUNT 3
+#define STAGECOUNT 4
 using namespace std;
+
+const string StageFile[STAGECOUNT] ={
+    "stage-1.map",
+    "stage-2.map",
+    "stage-3.map",
+    "stage-4.map",
+};
 
 int main(int argc, char const *argv[])
 {
@@ -64,41 +72,50 @@ Main:
     {
         clear();
         refresh();
-        Board now = Board();
-        int result = now.loop();
-        clear();
-        if (result == EXIT_FAILURE)
-        {
-            switch (now.why())
+        WINDOW* map = newwin(25,50, 2,2);
+        WINDOW* statusBoard = newwin(5, 20, 0,55);
+        WINDOW* missionBoard = newwin(5,20, 10, 55);
+        for(int i = 0; i<STAGECOUNT;i++) {
+            Board now = Board(StageFile[i], map, missionBoard, statusBoard);
+            int result = now.loop();
+            clear();
+            if (result == EXIT_FAILURE)
             {
-            case DeadCase::ColideBody:
-                move(row / 2, col / 2 - DeadMessage[DeadCase::ColideBody].length() / 2);
-                addstr(DeadMessage[DeadCase::ColideBody].c_str());
-                break;
-            case DeadCase::ColideWall:
-                move(row / 2, col / 2 - DeadMessage[DeadCase::ColideWall].length() / 2);
-                addstr(DeadMessage[DeadCase::ColideWall].c_str());
-                break;
-            case DeadCase::OppositeWay:
-                move(row / 2, col / 2 - DeadMessage[DeadCase::OppositeWay].length() / 2);
-                addstr(DeadMessage[DeadCase::OppositeWay].c_str());
-                break;
-            case DeadCase::ShortBody:
-                move(row / 2, col / 2 - DeadMessage[DeadCase::ShortBody].length() / 2);
-                addstr(DeadMessage[DeadCase::ShortBody].c_str());
-                break;
-            default:
-                break;
+                switch (now.why())
+                {
+                case DeadCase::ColideBody:
+                    move(row / 2, col / 2 - DeadMessage[DeadCase::ColideBody].length() / 2);
+                    addstr(DeadMessage[DeadCase::ColideBody].c_str());
+                    break;
+                case DeadCase::ColideWall:
+                    move(row / 2, col / 2 - DeadMessage[DeadCase::ColideWall].length() / 2);
+                    addstr(DeadMessage[DeadCase::ColideWall].c_str());
+                    break;
+                case DeadCase::OppositeWay:
+                    move(row / 2, col / 2 - DeadMessage[DeadCase::OppositeWay].length() / 2);
+                    addstr(DeadMessage[DeadCase::OppositeWay].c_str());
+                    break;
+                case DeadCase::ShortBody:
+                    move(row / 2, col / 2 - DeadMessage[DeadCase::ShortBody].length() / 2);
+                    addstr(DeadMessage[DeadCase::ShortBody].c_str());
+                    break;
+                case DeadCase::UserGiveup:
+                    move(row/2, col/2 - DeadMessage[DeadCase::UserGiveup].length()/2);
+                    addstr(DeadMessage[DeadCase::UserGiveup].c_str());
+                    break;
+                default:
+                    break;
+                }
+                timeout(-1);
+                move(row / 2 + 1, col / 2);
+                addstr("quit to press any button");
+                refresh();
+                timeout(-1);
+                getch();
+                endwin();
+                return EXIT_FAILURE;
             }
-            timeout(-1);
-            move(row / 2 + 1, col / 2);
-            addstr("quit to press any button");
-            refresh();
-            timeout(-1);
-            getch();
         }
-        endwin();
-        return result;
     }
     catch (BoardMiniumSizeException &e)
     {

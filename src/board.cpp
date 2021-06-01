@@ -9,12 +9,15 @@
  * 
  */
 #include "board.h"
+#include "mission.h"
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <ncurses.h>
 #include <random>
 #include <thread>
+#include <fstream>
+#include <sstream>
 
 using namespace chrono;
 
@@ -70,45 +73,62 @@ void Board::initColor()
  * 
  * @param size 
  */
-Board::Board(int size) : size(size), user(Snake(size))
-{
-    if (size < 20)
-        throw BoardMiniumSizeException();
-    win = newwin(size, size * 2, 2, 2);
-    if (win == nullptr)
-        throw exception();
-    keypad(win, true);
+Board::Board(string file_name, WINDOW* map, WINDOW *mission_board, WINDOW *status_board) :map(map), mission_board(mission_board), status_board(status_board)
+{   
+    ifstream mapFile(file_name);
+    keypad(map, true);
+    keypad(mission_board, true);
+    keypad(status_board, true);
+
+    vector<Point> snakeBody;
+    char line[80] = {0,};
+    mapFile >> stageClear.MaxBodyLength >> stageClear.NumberGrowthItem >> stageClear.NumberPoisonItem >> stageClear.NumberGate;
+    if(!mapFile.is_open()){ throw exception(); }
+
+
+    while(!mapFile.eof())
+    {
+        mapFile>>line;
+        board.push_back({});
+        int i = 0;
+        while(line[i] != '\0')
+        {
+            board.back().push_back((short)(line[i++] - '0'));
+        }
+    }
+
+    size = board[0].size();
 
     for (int i = 0; i < size; i++)
     {
-        board.push_back({});
         for (int j = 0; j < size; j++)
         {
-            int value = 0;
-            if (i == 0 || i + 1 == size)
+            if((board[i][j] == SNAKE_HEAD) && (snakeBody.empty()))
             {
-                value = 1;
+                snakeBody.push_back(Point(j, i));
+                board[i][j] = NONE_COLOR;
             }
-            if (j == 0 || j + 1 == size)
-            {
-                value += 1;
+
+            if(board[i][j] == SNAKE_BODY)
+            {   
+                if(snakeBody.empty())
+                {
+                    throw exception();
+                }
+                else
+                {
+                    snakeBody.push_back(Point(j, i));
+                    board[i][j] = NONE_COLOR;
+                }
+            }          
+            if(board[i][j] == WALL) {
+                walls.push_back(Point(j,i));
             }
-            if (value == 1)
-                walls.push_back(Point(j, i));
-            board[i].push_back(value);
-            if (i == 0 || i + 1 == size)
-            {
-                value = 1;
-            }
-            value = 0;
+
         }
     }
-    // 1자 벽
-    for (int i = 0; i < size / 2; i++)
-    {
-        board[5 + i][size / 2 + 3] = WALL;
-        walls.push_back(Point(size / 2 + 3, 5 + i));
-    }
+    user = Snake(snakeBody);
+
 }
 
 /**
@@ -125,6 +145,9 @@ int Board::loop()
     print();
     while (true)
     {
+        if(stageClear.isClear()) {
+            return EXIT_SUCCESS;
+        }
         int input = getch();
         flushinp();
         Direct d = Direct::NONE;
@@ -147,7 +170,8 @@ int Board::loop()
             d = Direct::E;
             break;
         case 'q':
-            return EXIT_SUCCESS;
+            deadCase = DeadCase::UserGiveup;
+            return EXIT_FAILURE;
         }
         if ((d ^ user.direct) == Direct::Opposite)
         {
@@ -199,6 +223,9 @@ bool Board::update()
     if (board[head.y][head.x] == GATE)
     {
         enterGate(head);
+        stageClear.NumberGate--;
+        if(stageClear.NumberGate == 0)
+            stageClear.isPassGate = true;
     }
 
     // event 게이트가 존자 하지 않을 경우
@@ -230,6 +257,22 @@ bool Board::update()
         if (head == items[i].p)
         {
             consumeItem(i);
+            switch (items[i].itemV) {
+                case 2:
+                    stageClear.NumberPoisonItem--;
+                    if(stageClear.NumberPoisonItem == 0) 
+                    {
+                        stageClear.isPassPoison = true;
+                    }
+                    break;
+                case 1:
+                    stageClear.NumberGrowthItem--;
+                    if(stageClear.NumberGrowthItem == 0)
+                    {
+                        stageClear.isPassGrowth = true;
+                    }
+                    break;
+            }
         }
     }
 
@@ -248,12 +291,12 @@ void Board::print()
     {
         for (int j = 0; j < size; j++)
         {
-            wattron(win, COLOR_PAIR(board[i][j]));
-            wmove(win, i, j * 2);
-            waddch(win, '.');
-            wmove(win, i, j * 2 + 1);
-            waddch(win, '.');
-            wattroff(win, COLOR_PAIR(board[i][j]));
+            wattron(map, COLOR_PAIR(board[i][j]));
+            wmove(map, i, j * 2);
+            waddch(map, '.');
+            wmove(map, i, j * 2 + 1);
+            waddch(map, '.');
+            wattroff(map, COLOR_PAIR(board[i][j]));
         }
     }
     for (int i = 0; i < user.bodyLength; i++)
@@ -269,17 +312,18 @@ void Board::print()
             color = SNAKE_BODY;
         }
 
-        wattron(win, COLOR_PAIR(color));
+        wattron(map, COLOR_PAIR(color));
 
-        wmove(win, user.body[i].y, user.body[i].x * 2);
-        waddch(win, ' ');
+        wmove(map, user.body[i].y, user.body[i].x * 2);
+        waddch(map, ' ');
 
-        wmove(win, user.body[i].y, user.body[i].x * 2 + 1);
-        waddch(win, ' ');
+        wmove(map, user.body[i].y, user.body[i].x * 2 + 1);
+        waddch(map, ' ');
 
-        wattroff(win, COLOR_PAIR(color));
+        wattroff(map, COLOR_PAIR(color));
     }
-    wrefresh(win);
+    wrefresh(map);
+    wmove(status_board, 0,0);
 }
 
 /**
