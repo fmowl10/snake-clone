@@ -13,11 +13,11 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
+#include <fstream>
 #include <ncurses.h>
 #include <random>
-#include <thread>
-#include <fstream>
 #include <sstream>
+#include <thread>
 
 using namespace chrono;
 
@@ -45,13 +45,13 @@ const char *BoardMiniumSizeException::what()
     return "too small board size, minium is 21";
 }
 
-
 /**
  * @brief returns exception message
  * 
  * @return const char* 
  */
-const char *InvalidMapException::what() {
+const char *InvalidMapException::what()
+{
     return "invalid map file";
 }
 
@@ -84,8 +84,8 @@ void Board::initColor()
  * 
  * @param size 
  */
-Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard) :map(map), missionBoard(missionBoard), statusBoard(statusBoard)
-{   
+Board::Board(string file_name, WINDOW *map, WINDOW *missionBoard, WINDOW *statusBoard) : map(map), missionBoard(missionBoard), statusBoard(statusBoard)
+{
     ifstream mapFile(file_name);
 
     keypad(map, true);
@@ -98,7 +98,9 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
     wclear(map);
 
     vector<Point> snakeBody;
-    char line[80] = {0,};
+    char line[80] = {
+        0,
+    };
     int MaxBodyLen = 0;
     int NumberGrowth = 0;
     int NumberPoisonItem = 0;
@@ -110,15 +112,17 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
 
     stageClear.currentMax = 3;
 
-    if(!mapFile.is_open()){ throw InvalidMapException(); }
-
-
-    while(!mapFile.eof())
+    if (!mapFile.is_open())
     {
-        mapFile>>line;
+        throw InvalidMapException();
+    }
+
+    while (!mapFile.eof())
+    {
+        mapFile >> line;
         board.push_back({});
         int i = 0;
-        while(line[i] != '\0')
+        while (line[i] != '\0')
         {
             board.back().push_back((short)(line[i++] - '0'));
         }
@@ -126,7 +130,8 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
 
     size = board[0].size();
 
-    if(size > 21) {
+    if (size > 21)
+    {
         throw BoardMiniumSizeException();
     }
 
@@ -134,15 +139,15 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
     {
         for (int j = 0; j < size; j++)
         {
-            if((board[i][j] == SNAKE_HEAD) && (snakeBody.empty()))
+            if ((board[i][j] == SNAKE_HEAD) && (snakeBody.empty()))
             {
                 snakeBody.push_back(Point(j, i));
                 board[i][j] = NONE_COLOR;
             }
 
-            if(board[i][j] == SNAKE_BODY)
-            {   
-                if(snakeBody.empty())
+            if (board[i][j] == SNAKE_BODY)
+            {
+                if (snakeBody.empty())
                 {
                     throw exception();
                 }
@@ -151,15 +156,14 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
                     snakeBody.push_back(Point(j, i));
                     board[i][j] = NONE_COLOR;
                 }
-            }          
-            if(board[i][j] == WALL) {
-                walls.push_back(Point(j,i));
             }
-
+            if (board[i][j] == WALL)
+            {
+                walls.push_back(Point(j, i));
+            }
         }
     }
     user = Snake(snakeBody);
-
 }
 
 /**
@@ -176,7 +180,8 @@ int Board::loop()
     print();
     while (true)
     {
-        if(stageClear.isClear()) {
+        if (stageClear.isClear())
+        {
             return EXIT_SUCCESS;
         }
         int input = getch();
@@ -285,7 +290,7 @@ bool Board::update()
         if (head == items[i].p)
         {
             consumeItem(i);
-       }
+        }
     }
 
     consumeItemTick();
@@ -334,8 +339,8 @@ void Board::print()
 
         wattroff(map, COLOR_PAIR(color));
     }
-    box(statusBoard, 0,0);
-    box(missionBoard, 0,0);
+    box(statusBoard, 0, 0);
+    box(missionBoard, 0, 0);
 
     mvwprintw(statusBoard, 0, 1, "Score Board");
     mvwprintw(statusBoard, 1, 1, "B : %2d/%d", user.bodyLength, stageClear.currentMax);
@@ -344,11 +349,10 @@ void Board::print()
     mvwprintw(statusBoard, 4, 1, "G : %2d", stageClear.GatePassed);
 
     mvwprintw(missionBoard, 0, 1, "Mission");
-    mvwprintw(missionBoard, 1, 1, "B : %2d (%c)", stageClear.getMaxBodyLength(), stageClear.isPassMaxBodyLength()?'v':' ');
-    mvwprintw(missionBoard, 2, 1, "+ : %2d (%c)", stageClear.getNumberGrothItem(), stageClear.isPassGrowthItem()?'v':' ');
-    mvwprintw(missionBoard, 3, 1, "- : %2d (%c)", stageClear.getNumberPoisonItem(), stageClear.isPassPoisonItem()?'v':' ');
-    mvwprintw(missionBoard, 4, 1, "G : %2d (%c)", stageClear.getNumberGate(), stageClear.isPassNumberGate()?'v':' ');
-
+    mvwprintw(missionBoard, 1, 1, "B : %2d (%c)", stageClear.getMaxBodyLength(), stageClear.isPassMaxBodyLength() ? 'v' : ' ');
+    mvwprintw(missionBoard, 2, 1, "+ : %2d (%c)", stageClear.getNumberGrothItem(), stageClear.isPassGrowthItem() ? 'v' : ' ');
+    mvwprintw(missionBoard, 3, 1, "- : %2d (%c)", stageClear.getNumberPoisonItem(), stageClear.isPassPoisonItem() ? 'v' : ' ');
+    mvwprintw(missionBoard, 4, 1, "G : %2d (%c)", stageClear.getNumberGate(), stageClear.isPassNumberGate() ? 'v' : ' ');
 
     wrefresh(map);
     wrefresh(statusBoard);
@@ -379,7 +383,7 @@ void Board::createItem(int num)
         randX = (rand() % (size - 2)) + 1;
         randY = (rand() % (size - 2)) + 1;
 
-        if(board[randY][randX] == NONE_COLOR)
+        if (board[randY][randX] == NONE_COLOR)
             break;
     }
     int itemV = (rand() % 2) + 1;
@@ -407,7 +411,7 @@ void Board::consumeItem(int num)
     case 1:
         user.growthBody();
         stageClear.consumedGrowthItem++;
-        if(stageClear.currentMax < user.bodyLength)
+        if (stageClear.currentMax < user.bodyLength)
         {
             stageClear.currentMax = user.bodyLength;
         }

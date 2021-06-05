@@ -13,8 +13,8 @@
 #include <ncurses.h>
 #include <vector>
 
-#include "snake.h"
 #include "mission.h"
+#include "snake.h"
 
 #ifndef __BOARD_H__
 #define __BOARD_H__
@@ -158,7 +158,7 @@ class Board
     void consumeGateTick();
 
 public:
-    Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard);
+    Board(string file_name, WINDOW *map, WINDOW *missionBoard, WINDOW *statusBoard);
     int loop();
     DeadCase why();
     static void initColor();
@@ -170,10 +170,9 @@ public:
     const char *what();
 };
 
-
 class InvalidMapException : public exception
 {
-    public:
+public:
     const char *what();
 };
 

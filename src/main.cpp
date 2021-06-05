@@ -9,7 +9,7 @@
 #define STAGECOUNT 5
 using namespace std;
 
-const string StageFile[STAGECOUNT] ={
+const string StageFile[STAGECOUNT] = {
     "stage-1.map",
     "stage-2.map",
     "stage-3.map",
@@ -79,30 +79,31 @@ int main(int argc, char const *argv[])
                 }
             }
             break;
-            
         }
-        if(KONAMICOMMAND[KONAMIINDEX] == ch) 
+        if (KONAMICOMMAND[KONAMIINDEX] == ch)
         {
             KONAMIINDEX++;
-            mvprintw(row/2+4, col/2 - KONAMICOMMAND.size() /2 + KONAMIINDEX, "0");
+            mvprintw(row / 2 + 4, col / 2 - KONAMICOMMAND.size() / 2 + KONAMIINDEX, "0");
         }
-        else 
+        else
         {
-            move(row/2 + 4, 0);
+            move(row / 2 + 4, 0);
             clrtoeol();
             KONAMIINDEX = 0;
         }
 
-        if(KONAMIINDEX == KONAMICOMMAND.size()) 
+        if (KONAMIINDEX == KONAMICOMMAND.size())
         {
             clear();
-            mvprintw(row/2, col/2 - strlen(KONAMICOMMANDMESSAGE)/2, KONAMICOMMANDMESSAGE);
-            mvprintw(row/2+1, col/2 - strlen(chooseStageMessage)/2, chooseStageMessage);
+            mvprintw(row / 2, col / 2 - strlen(KONAMICOMMANDMESSAGE) / 2, KONAMICOMMANDMESSAGE);
+            mvprintw(row / 2 + 1, col / 2 - strlen(chooseStageMessage) / 2, chooseStageMessage);
             refresh();
-            while(true) {
+            while (true)
+            {
                 int stage = getch() - '0';
-                if(1 <= stage && stage <= STAGECOUNT) {
-                    i = stage -1;
+                if (1 <= stage && stage <= STAGECOUNT)
+                {
+                    i = stage - 1;
                     break;
                 }
             }
@@ -112,16 +113,17 @@ int main(int argc, char const *argv[])
         }
     }
 Main:
-    WINDOW* map = newwin(25,50, 2,2);
-    WINDOW* statusBoard = newwin(6,15, 2,50);
-    WINDOW* missionBoard = newwin(6,15, 9, 50);
+    WINDOW *map = newwin(25, 50, 2, 2);
+    WINDOW *statusBoard = newwin(6, 15, 2, 50);
+    WINDOW *missionBoard = newwin(6, 15, 9, 50);
     try
     {
-        for( ; i<STAGECOUNT;i++) {
+        for (; i < STAGECOUNT; i++)
+        {
             Board now = Board(StageFile[i], map, missionBoard, statusBoard);
             refresh();
             clear();
-            mvprintw(1,2, stageMessage,i+1);
+            mvprintw(1, 2, stageMessage, i + 1);
             int result = now.loop();
             clear();
             refresh();
@@ -131,7 +133,7 @@ Main:
                 delwin(statusBoard);
                 delwin(statusBoard);
                 delwin(map);
-                
+
                 switch (now.why())
                 {
                 case DeadCase::ColideBody:
@@ -151,7 +153,7 @@ Main:
                     addstr(DeadMessage[DeadCase::ShortBody].c_str());
                     break;
                 case DeadCase::UserGiveup:
-                    move(row/2, col/2 - DeadMessage[DeadCase::UserGiveup].length()/2);
+                    move(row / 2, col / 2 - DeadMessage[DeadCase::UserGiveup].length() / 2);
                     addstr(DeadMessage[DeadCase::UserGiveup].c_str());
                     break;
                 default:
@@ -167,7 +169,7 @@ Main:
                 endwin();
                 return EXIT_FAILURE;
             }
-            mvprintw(row/2, col/2 - strlen(stageClearMessage), stageClearMessage, i+1);
+            mvprintw(row / 2, col / 2 - strlen(stageClearMessage), stageClearMessage, i + 1);
             refresh();
             timeout(-1);
             getch();
@@ -178,13 +180,14 @@ Main:
         endwin();
         cout << e.what() << endl;
         return EXIT_FAILURE;
-    } catch( InvalidMapException &e) 
+    }
+    catch (InvalidMapException &e)
     {
         endwin();
         cout << e.what() << endl;
         return EXIT_FAILURE;
     }
-    mvprintw(row/2, col/2 - strlen(gameClearMessage)/2, gameClearMessage);
+    mvprintw(row / 2, col / 2 - strlen(gameClearMessage) / 2, gameClearMessage);
     refresh();
     timeout(-1);
     getch();

@@ -15,21 +15,19 @@
  * @brief mission class
  * 
  */
-class Mission 
+class Mission
 {
     int MaxBodyLength;
     int NumberGrowthItem;
     int NumberPoisonItem;
     int NumberGate;
 
-
-    public:
+public:
     int currentMax;
     int consumedGrowthItem;
     int consumedPoisonItem;
     int GatePassed;
     bool isMaxBodyLength;
-
 
     /**
      * @brief Construct a new Mission object
@@ -57,14 +55,14 @@ class Mission
     {
         return consumedGrowthItem >= NumberGrowthItem;
     }
-    
+
     /**
      * @brief returns is consumedPoisonItem greater than NumberPoisonItem
      * 
      * @return true 
      * @return false 
      */
-    bool isPassPoisonItem() 
+    bool isPassPoisonItem()
     {
         return consumedPoisonItem >= NumberPoisonItem;
     }
@@ -75,18 +73,18 @@ class Mission
      * @return true 
      * @return false 
      */
-    bool isPassNumberGate() 
+    bool isPassNumberGate()
     {
         return GatePassed >= NumberGate;
     }
-    
+
     /**
      * @brief returns is currentMax greater than MaxBodyLength
      * 
      * @return true 
      * @return false 
      */
-    bool isPassMaxBodyLength() 
+    bool isPassMaxBodyLength()
     {
         return currentMax >= MaxBodyLength;
     }
@@ -99,10 +97,10 @@ class Mission
      */
     bool isClear()
     {
-        if(isPassGrowthItem() && isPassMaxBodyLength() && isPassPoisonItem() && isPassNumberGate()) 
+        if (isPassGrowthItem() && isPassMaxBodyLength() && isPassPoisonItem() && isPassNumberGate())
         {
             return true;
-        }    
+        }
         return false;
     }
 
@@ -111,7 +109,7 @@ class Mission
      * 
      * @return int 
      */
-    int getMaxBodyLength() 
+    int getMaxBodyLength()
     {
         return MaxBodyLength;
     }
@@ -121,7 +119,7 @@ class Mission
      * 
      * @return int 
      */
-    int getNumberGrothItem() 
+    int getNumberGrothItem()
     {
         return NumberGrowthItem;
     }
@@ -131,17 +129,17 @@ class Mission
      * 
      * @return int 
      */
-    int getNumberPoisonItem() 
+    int getNumberPoisonItem()
     {
         return NumberPoisonItem;
     }
-    
+
     /**
      * @brief Get the Number Gate object
      * 
      * @return int 
      */
-    int getNumberGate() 
+    int getNumberGate()
     {
         return NumberGate;
     }
