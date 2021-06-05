@@ -70,17 +70,21 @@ int main(int argc, char const *argv[])
 Main:
     try
     {
-        clear();
-        refresh();
         WINDOW* map = newwin(25,50, 2,2);
-        WINDOW* statusBoard = newwin(5, 20, 0,55);
-        WINDOW* missionBoard = newwin(5,20, 10, 55);
+        WINDOW* statusBoard = newwin(6,30, 2,50);
+        WINDOW* missionBoard = newwin(6,30, 9, 50);
         for(int i = 0; i<STAGECOUNT;i++) {
             Board now = Board(StageFile[i], map, missionBoard, statusBoard);
+            refresh();
+            clear();
             int result = now.loop();
             clear();
             if (result == EXIT_FAILURE)
             {
+                delwin(statusBoard);
+                delwin(statusBoard);
+                delwin(map);
+
                 switch (now.why())
                 {
                 case DeadCase::ColideBody:
@@ -118,6 +122,11 @@ Main:
         }
     }
     catch (BoardMiniumSizeException &e)
+    {
+        endwin();
+        cout << e.what() << endl;
+        return EXIT_FAILURE;
+    } catch( InvalidMapException &e) 
     {
         endwin();
         cout << e.what() << endl;

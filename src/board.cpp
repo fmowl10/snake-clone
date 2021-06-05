@@ -45,6 +45,10 @@ const char *BoardMiniumSizeException::what()
     return "too small board size, minium is 21";
 }
 
+const char *InvalidMapException::what() {
+    return "invalid map file";
+}
+
 bool Board::isInitColor = false;
 
 /**
@@ -74,17 +78,31 @@ void Board::initColor()
  * 
  * @param size 
  */
-Board::Board(string file_name, WINDOW* map, WINDOW *mission_board, WINDOW *status_board) :map(map), mission_board(mission_board), status_board(status_board)
+Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard) :map(map), missionBoard(missionBoard), statusBoard(statusBoard)
 {   
     ifstream mapFile(file_name);
+
     keypad(map, true);
-    keypad(mission_board, true);
-    keypad(status_board, true);
+    keypad(missionBoard, true);
+    keypad(statusBoard, true);
+
+    wclear(missionBoard);
+    wclear(statusBoard);
+
+    wclear(map);
 
     vector<Point> snakeBody;
     char line[80] = {0,};
-    mapFile >> stageClear.MaxBodyLength >> stageClear.NumberGrowthItem >> stageClear.NumberPoisonItem >> stageClear.NumberGate;
-    if(!mapFile.is_open()){ throw exception(); }
+    int MaxBodyLen = 0;
+    int NumberGrowth = 0;
+    int NumberPoisonItem = 0;
+    int NumberGate = 0;
+
+    mapFile >> MaxBodyLen >> NumberGrowth >> NumberPoisonItem >> NumberGate;
+
+    stageClear = Mission(MaxBodyLen, NumberGrowth, NumberPoisonItem, NumberGate);
+
+    if(!mapFile.is_open()){ throw InvalidMapException(); }
 
 
     while(!mapFile.eof())
@@ -99,6 +117,10 @@ Board::Board(string file_name, WINDOW* map, WINDOW *mission_board, WINDOW *statu
     }
 
     size = board[0].size();
+
+    if(size > 21) {
+        throw BoardMiniumSizeException();
+    }
 
     for (int i = 0; i < size; i++)
     {
@@ -224,9 +246,6 @@ bool Board::update()
     if (board[head.y][head.x] == GATE)
     {
         enterGate(head);
-        stageClear.NumberGate--;
-        if(stageClear.NumberGate == 0)
-            stageClear.isPassGate = true;
     }
 
     // event 게이트가 존자 하지 않을 경우
@@ -258,23 +277,7 @@ bool Board::update()
         if (head == items[i].p)
         {
             consumeItem(i);
-            switch (items[i].itemV) {
-                case 2:
-                    stageClear.NumberPoisonItem--;
-                    if(stageClear.NumberPoisonItem == 0) 
-                    {
-                        stageClear.isPassPoison = true;
-                    }
-                    break;
-                case 1:
-                    stageClear.NumberGrowthItem--;
-                    if(stageClear.NumberGrowthItem == 0)
-                    {
-                        stageClear.isPassGrowth = true;
-                    }
-                    break;
-            }
-        }
+       }
     }
 
     consumeItemTick();
@@ -323,8 +326,18 @@ void Board::print()
 
         wattroff(map, COLOR_PAIR(color));
     }
+    box(statusBoard, 0,0);
+    box(missionBoard, 0,0);
+
+    mvwprintw(statusBoard, 1, 1, "bodyLength : %02d", user.bodyLength);
+    mvwprintw(statusBoard, 2, 1, "growthItems : %02d", stageClear.consumedGrowthItem);
+    mvwprintw(statusBoard, 3, 1, "posionItems : %02d", stageClear.consumedPoisonItem);
+    mvwprintw(statusBoard, 4, 1, "gates : %02d", stageClear.GatePassed);
+
+
     wrefresh(map);
-    wmove(status_board, 0,0);
+    wrefresh(statusBoard);
+    wrefresh(missionBoard);
 }
 
 /**
@@ -351,13 +364,8 @@ void Board::createItem(int num)
         randX = (rand() % (size - 2)) + 1;
         randY = (rand() % (size - 2)) + 1;
 
-        // lambda 식에 맞는 wall이 존재하면 못나감
-        auto i = find_if(walls.begin(), walls.end(), [randX, randY](Point &x)
-                         { return x == Point(randX, randY); });
-        if (i == walls.end())
-        {
+        if(board[randY][randX] == NONE_COLOR)
             break;
-        }
     }
     int itemV = (rand() % 2) + 1;
     switch (itemV)
@@ -383,9 +391,15 @@ void Board::consumeItem(int num)
     {
     case 1:
         user.growthBody();
+        stageClear.consumedGrowthItem++;
+        if(stageClear.currentMax < user.bodyLength)
+        {
+            stageClear.currentMax = user.bodyLength;
+        }
         break;
     case 2:
         user.decreaseBody();
+        stageClear.consumedPoisonItem++;
         break;
     }
 
@@ -422,6 +436,7 @@ void Board::consumeItemTick()
  */
 void Board::enterGate(Point &head)
 {
+    stageClear.GatePassed++;
     Point exit = gate.checkExit(head, user.bodyLength);
     Point wayout;
     // 벽이 위 가장자리인경우

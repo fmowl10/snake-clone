@@ -140,8 +140,8 @@ class Board
     int size;
     Gate gate;
     WINDOW *map;
-    WINDOW *mission_board;
-    WINDOW *status_board;
+    WINDOW *missionBoard;
+    WINDOW *statusBoard;
     Snake user;
     static bool isInitColor;
     DeadCase deadCase;
@@ -158,7 +158,7 @@ class Board
     void consumeGateTick();
 
 public:
-    Board(string file_name, WINDOW* map, WINDOW *mission_board, WINDOW *status_board);
+    Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard);
     int loop();
     DeadCase why();
     static void initColor();
@@ -169,4 +169,12 @@ class BoardMiniumSizeException : public exception
 public:
     const char *what();
 };
+
+
+class InvalidMapException : public exception
+{
+    public:
+    const char *what();
+};
+
 #endif
