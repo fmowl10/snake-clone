@@ -2,9 +2,11 @@
 #include <cstring>
 #include <iostream>
 #include <ncurses.h>
+#include <vector>
 
 #define MESSAGECOUNT 3
-#define STAGECOUNT 4
+
+#define STAGECOUNT 5
 using namespace std;
 
 const string StageFile[STAGECOUNT] ={
@@ -12,7 +14,14 @@ const string StageFile[STAGECOUNT] ={
     "stage-2.map",
     "stage-3.map",
     "stage-4.map",
+    "stage-5.map",
 };
+
+const char *stageClearMessage = "you clear stage %d press any button to start next stage";
+const char *gameClearMessage = "you clear the game press any button to exit the game";
+const char *stageMessage = "Stage %d";
+const char *KONAMICOMMANDMESSAGE = "KONAMI???";
+const char *chooseStageMessage = "you can go any stage input stage number ";
 
 int main(int argc, char const *argv[])
 {
@@ -25,6 +34,11 @@ int main(int argc, char const *argv[])
     refresh();
     int row = getmaxy(stdscr);
     int col = getmaxx(stdscr);
+
+    vector<int> KONAMICOMMAND = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, int('b'), int('a')};
+
+    int i = 0;
+    int KONAMIINDEX = 0;
     string welcome_message[MESSAGECOUNT] = {
         "welcome this is snake game",
         "click this text to start or press s",
@@ -65,26 +79,59 @@ int main(int argc, char const *argv[])
                 }
             }
             break;
+            
+        }
+        if(KONAMICOMMAND[KONAMIINDEX] == ch) 
+        {
+            KONAMIINDEX++;
+            mvprintw(row/2+4, col/2 - KONAMICOMMAND.size() /2 + KONAMIINDEX, "0");
+        }
+        else 
+        {
+            move(row/2 + 4, 0);
+            clrtoeol();
+            KONAMIINDEX = 0;
+        }
+
+        if(KONAMIINDEX == KONAMICOMMAND.size()) 
+        {
+            clear();
+            mvprintw(row/2, col/2 - strlen(KONAMICOMMANDMESSAGE)/2, KONAMICOMMANDMESSAGE);
+            mvprintw(row/2+1, col/2 - strlen(chooseStageMessage)/2, chooseStageMessage);
+            refresh();
+            while(true) {
+                int stage = getch() - '0';
+                if(1 <= stage && stage <= STAGECOUNT) {
+                    i = stage -1;
+                    break;
+                }
+            }
+            clear();
+            refresh();
+            goto Main;
         }
     }
 Main:
+    WINDOW* map = newwin(25,50, 2,2);
+    WINDOW* statusBoard = newwin(6,15, 2,50);
+    WINDOW* missionBoard = newwin(6,15, 9, 50);
     try
     {
-        WINDOW* map = newwin(25,50, 2,2);
-        WINDOW* statusBoard = newwin(6,30, 2,50);
-        WINDOW* missionBoard = newwin(6,30, 9, 50);
-        for(int i = 0; i<STAGECOUNT;i++) {
+        for( ; i<STAGECOUNT;i++) {
             Board now = Board(StageFile[i], map, missionBoard, statusBoard);
             refresh();
             clear();
+            mvprintw(1,2, stageMessage,i+1);
             int result = now.loop();
             clear();
+            refresh();
+
             if (result == EXIT_FAILURE)
             {
                 delwin(statusBoard);
                 delwin(statusBoard);
                 delwin(map);
-
+                
                 switch (now.why())
                 {
                 case DeadCase::ColideBody:
@@ -111,7 +158,8 @@ Main:
                     break;
                 }
                 timeout(-1);
-                move(row / 2 + 1, col / 2);
+                move(row / 2 + 1, col / 2 - 12);
+                clrtoeol();
                 addstr("quit to press any button");
                 refresh();
                 timeout(-1);
@@ -119,6 +167,10 @@ Main:
                 endwin();
                 return EXIT_FAILURE;
             }
+            mvprintw(row/2, col/2 - strlen(stageClearMessage), stageClearMessage, i+1);
+            refresh();
+            timeout(-1);
+            getch();
         }
     }
     catch (BoardMiniumSizeException &e)
@@ -132,4 +184,10 @@ Main:
         cout << e.what() << endl;
         return EXIT_FAILURE;
     }
+    mvprintw(row/2, col/2 - strlen(gameClearMessage)/2, gameClearMessage);
+    refresh();
+    timeout(-1);
+    getch();
+    endwin();
+    return EXIT_SUCCESS;
 }

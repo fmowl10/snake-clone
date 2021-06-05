@@ -45,6 +45,12 @@ const char *BoardMiniumSizeException::what()
     return "too small board size, minium is 21";
 }
 
+
+/**
+ * @brief returns exception message
+ * 
+ * @return const char* 
+ */
 const char *InvalidMapException::what() {
     return "invalid map file";
 }
@@ -101,6 +107,8 @@ Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *status
     mapFile >> MaxBodyLen >> NumberGrowth >> NumberPoisonItem >> NumberGate;
 
     stageClear = Mission(MaxBodyLen, NumberGrowth, NumberPoisonItem, NumberGate);
+
+    stageClear.currentMax = 3;
 
     if(!mapFile.is_open()){ throw InvalidMapException(); }
 
@@ -329,10 +337,17 @@ void Board::print()
     box(statusBoard, 0,0);
     box(missionBoard, 0,0);
 
-    mvwprintw(statusBoard, 1, 1, "bodyLength : %02d", user.bodyLength);
-    mvwprintw(statusBoard, 2, 1, "growthItems : %02d", stageClear.consumedGrowthItem);
-    mvwprintw(statusBoard, 3, 1, "posionItems : %02d", stageClear.consumedPoisonItem);
-    mvwprintw(statusBoard, 4, 1, "gates : %02d", stageClear.GatePassed);
+    mvwprintw(statusBoard, 0, 1, "Score Board");
+    mvwprintw(statusBoard, 1, 1, "B : %2d/%d", user.bodyLength, stageClear.currentMax);
+    mvwprintw(statusBoard, 2, 1, "+ : %2d", stageClear.consumedGrowthItem);
+    mvwprintw(statusBoard, 3, 1, "- : %2d", stageClear.consumedPoisonItem);
+    mvwprintw(statusBoard, 4, 1, "G : %2d", stageClear.GatePassed);
+
+    mvwprintw(missionBoard, 0, 1, "Mission");
+    mvwprintw(missionBoard, 1, 1, "B : %2d (%c)", stageClear.getMaxBodyLength(), stageClear.isPassMaxBodyLength()?'v':' ');
+    mvwprintw(missionBoard, 2, 1, "+ : %2d (%c)", stageClear.getNumberGrothItem(), stageClear.isPassGrowthItem()?'v':' ');
+    mvwprintw(missionBoard, 3, 1, "- : %2d (%c)", stageClear.getNumberPoisonItem(), stageClear.isPassPoisonItem()?'v':' ');
+    mvwprintw(missionBoard, 4, 1, "G : %2d (%c)", stageClear.getNumberGate(), stageClear.isPassNumberGate()?'v':' ');
 
 
     wrefresh(map);
