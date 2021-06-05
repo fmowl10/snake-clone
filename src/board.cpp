@@ -9,12 +9,15 @@
  * 
  */
 #include "board.h"
+#include "mission.h"
 #include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <ncurses.h>
 #include <random>
 #include <thread>
+#include <fstream>
+#include <sstream>
 
 using namespace chrono;
 
@@ -42,6 +45,16 @@ const char *BoardMiniumSizeException::what()
     return "too small board size, minium is 21";
 }
 
+
+/**
+ * @brief returns exception message
+ * 
+ * @return const char* 
+ */
+const char *InvalidMapException::what() {
+    return "invalid map file";
+}
+
 bool Board::isInitColor = false;
 
 /**
@@ -53,13 +66,14 @@ void Board::initColor()
     if (isInitColor)
         return;
     start_color();
+    use_default_colors();
     init_color(6, 1000, 1000, 0);
-    init_color(2, 0, 1000, 0);
+    init_color(1, 1000, 500, 0);
     init_pair(WALL, 8, 8);
     init_pair(IMMUNE_WALL, 0, 0);
     init_pair(SNAKE_HEAD, 6, 6);
-    init_pair(SNAKE_BODY, 2, 2);
-    init_pair(GROWTH_ITEM, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(SNAKE_BODY, 1, 1);
+    init_pair(GROWTH_ITEM, COLOR_GREEN, COLOR_GREEN);
     init_pair(POISON_ITEM, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(GATE, COLOR_BLUE, COLOR_BLUE);
     isInitColor = true;
@@ -70,45 +84,82 @@ void Board::initColor()
  * 
  * @param size 
  */
-Board::Board(int size) : size(size), user(Snake(size))
-{
-    if (size < 20)
+Board::Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard) :map(map), missionBoard(missionBoard), statusBoard(statusBoard)
+{   
+    ifstream mapFile(file_name);
+
+    keypad(map, true);
+    keypad(missionBoard, true);
+    keypad(statusBoard, true);
+
+    wclear(missionBoard);
+    wclear(statusBoard);
+
+    wclear(map);
+
+    vector<Point> snakeBody;
+    char line[80] = {0,};
+    int MaxBodyLen = 0;
+    int NumberGrowth = 0;
+    int NumberPoisonItem = 0;
+    int NumberGate = 0;
+
+    mapFile >> MaxBodyLen >> NumberGrowth >> NumberPoisonItem >> NumberGate;
+
+    stageClear = Mission(MaxBodyLen, NumberGrowth, NumberPoisonItem, NumberGate);
+
+    stageClear.currentMax = 3;
+
+    if(!mapFile.is_open()){ throw InvalidMapException(); }
+
+
+    while(!mapFile.eof())
+    {
+        mapFile>>line;
+        board.push_back({});
+        int i = 0;
+        while(line[i] != '\0')
+        {
+            board.back().push_back((short)(line[i++] - '0'));
+        }
+    }
+
+    size = board[0].size();
+
+    if(size > 21) {
         throw BoardMiniumSizeException();
-    win = newwin(size, size * 2, 2, 2);
-    if (win == nullptr)
-        throw exception();
-    keypad(win, true);
+    }
 
     for (int i = 0; i < size; i++)
     {
-        board.push_back({});
         for (int j = 0; j < size; j++)
         {
-            int value = 0;
-            if (i == 0 || i + 1 == size)
+            if((board[i][j] == SNAKE_HEAD) && (snakeBody.empty()))
             {
-                value = 1;
+                snakeBody.push_back(Point(j, i));
+                board[i][j] = NONE_COLOR;
             }
-            if (j == 0 || j + 1 == size)
-            {
-                value += 1;
+
+            if(board[i][j] == SNAKE_BODY)
+            {   
+                if(snakeBody.empty())
+                {
+                    throw exception();
+                }
+                else
+                {
+                    snakeBody.push_back(Point(j, i));
+                    board[i][j] = NONE_COLOR;
+                }
+            }          
+            if(board[i][j] == WALL) {
+                walls.push_back(Point(j,i));
             }
-            if (value == 1)
-                walls.push_back(Point(j, i));
-            board[i].push_back(value);
-            if (i == 0 || i + 1 == size)
-            {
-                value = 1;
-            }
-            value = 0;
+
         }
     }
-    // 1자 벽
-    for (int i = 0; i < size / 2; i++)
-    {
-        board[5 + i][size / 2 + 3] = WALL;
-        walls.push_back(Point(size / 2 + 3, 5 + i));
-    }
+    user = Snake(snakeBody);
+
 }
 
 /**
@@ -125,6 +176,9 @@ int Board::loop()
     print();
     while (true)
     {
+        if(stageClear.isClear()) {
+            return EXIT_SUCCESS;
+        }
         int input = getch();
         flushinp();
         Direct d = Direct::NONE;
@@ -147,7 +201,8 @@ int Board::loop()
             d = Direct::E;
             break;
         case 'q':
-            return EXIT_SUCCESS;
+            deadCase = DeadCase::UserGiveup;
+            return EXIT_FAILURE;
         }
         if ((d ^ user.direct) == Direct::Opposite)
         {
@@ -230,7 +285,7 @@ bool Board::update()
         if (head == items[i].p)
         {
             consumeItem(i);
-        }
+       }
     }
 
     consumeItemTick();
@@ -248,12 +303,12 @@ void Board::print()
     {
         for (int j = 0; j < size; j++)
         {
-            wattron(win, COLOR_PAIR(board[i][j]));
-            wmove(win, i, j * 2);
-            waddch(win, '.');
-            wmove(win, i, j * 2 + 1);
-            waddch(win, '.');
-            wattroff(win, COLOR_PAIR(board[i][j]));
+            wattron(map, COLOR_PAIR(board[i][j]));
+            wmove(map, i, j * 2);
+            waddch(map, '.');
+            wmove(map, i, j * 2 + 1);
+            waddch(map, '.');
+            wattroff(map, COLOR_PAIR(board[i][j]));
         }
     }
     for (int i = 0; i < user.bodyLength; i++)
@@ -269,17 +324,35 @@ void Board::print()
             color = SNAKE_BODY;
         }
 
-        wattron(win, COLOR_PAIR(color));
+        wattron(map, COLOR_PAIR(color));
 
-        wmove(win, user.body[i].y, user.body[i].x * 2);
-        waddch(win, ' ');
+        wmove(map, user.body[i].y, user.body[i].x * 2);
+        waddch(map, ' ');
 
-        wmove(win, user.body[i].y, user.body[i].x * 2 + 1);
-        waddch(win, ' ');
+        wmove(map, user.body[i].y, user.body[i].x * 2 + 1);
+        waddch(map, ' ');
 
-        wattroff(win, COLOR_PAIR(color));
+        wattroff(map, COLOR_PAIR(color));
     }
-    wrefresh(win);
+    box(statusBoard, 0,0);
+    box(missionBoard, 0,0);
+
+    mvwprintw(statusBoard, 0, 1, "Score Board");
+    mvwprintw(statusBoard, 1, 1, "B : %2d/%d", user.bodyLength, stageClear.currentMax);
+    mvwprintw(statusBoard, 2, 1, "+ : %2d", stageClear.consumedGrowthItem);
+    mvwprintw(statusBoard, 3, 1, "- : %2d", stageClear.consumedPoisonItem);
+    mvwprintw(statusBoard, 4, 1, "G : %2d", stageClear.GatePassed);
+
+    mvwprintw(missionBoard, 0, 1, "Mission");
+    mvwprintw(missionBoard, 1, 1, "B : %2d (%c)", stageClear.getMaxBodyLength(), stageClear.isPassMaxBodyLength()?'v':' ');
+    mvwprintw(missionBoard, 2, 1, "+ : %2d (%c)", stageClear.getNumberGrothItem(), stageClear.isPassGrowthItem()?'v':' ');
+    mvwprintw(missionBoard, 3, 1, "- : %2d (%c)", stageClear.getNumberPoisonItem(), stageClear.isPassPoisonItem()?'v':' ');
+    mvwprintw(missionBoard, 4, 1, "G : %2d (%c)", stageClear.getNumberGate(), stageClear.isPassNumberGate()?'v':' ');
+
+
+    wrefresh(map);
+    wrefresh(statusBoard);
+    wrefresh(missionBoard);
 }
 
 /**
@@ -306,13 +379,8 @@ void Board::createItem(int num)
         randX = (rand() % (size - 2)) + 1;
         randY = (rand() % (size - 2)) + 1;
 
-        // lambda 식에 맞는 wall이 존재하면 못나감
-        auto i = find_if(walls.begin(), walls.end(), [randX, randY](Point &x)
-                         { return x == Point(randX, randY); });
-        if (i == walls.end())
-        {
+        if(board[randY][randX] == NONE_COLOR)
             break;
-        }
     }
     int itemV = (rand() % 2) + 1;
     switch (itemV)
@@ -338,9 +406,15 @@ void Board::consumeItem(int num)
     {
     case 1:
         user.growthBody();
+        stageClear.consumedGrowthItem++;
+        if(stageClear.currentMax < user.bodyLength)
+        {
+            stageClear.currentMax = user.bodyLength;
+        }
         break;
     case 2:
         user.decreaseBody();
+        stageClear.consumedPoisonItem++;
         break;
     }
 
@@ -377,6 +451,7 @@ void Board::consumeItemTick()
  */
 void Board::enterGate(Point &head)
 {
+    stageClear.GatePassed++;
     Point exit = gate.checkExit(head, user.bodyLength);
     Point wayout;
     // 벽이 위 가장자리인경우

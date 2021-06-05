@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "snake.h"
+#include "mission.h"
 
 #ifndef __BOARD_H__
 #define __BOARD_H__
@@ -117,15 +118,18 @@ enum DeadCase
     ColideWall,
     ColideBody,
     OppositeWay,
-    ShortBody
+    ShortBody,
+    UserGiveup,
 };
 
 // enum to data
-const string DeadMessage[4] = {
+const string DeadMessage[] = {
     "you hit the wall",
     "you hit the body",
     "you move to your body",
-    "your body is too short"};
+    "your body is too short",
+    "you give up",
+};
 
 using namespace std;
 class Board
@@ -133,13 +137,16 @@ class Board
     vector<vector<short>> board;
     vector<Point> walls;
     Item items[3];
-    int tick[3] = {0, 0, 0};
+    int size;
     Gate gate;
-    const int size;
-    WINDOW *win;
+    WINDOW *map;
+    WINDOW *missionBoard;
+    WINDOW *statusBoard;
     Snake user;
     static bool isInitColor;
     DeadCase deadCase;
+
+    Mission stageClear;
 
     bool update();
     void print();
@@ -151,7 +158,7 @@ class Board
     void consumeGateTick();
 
 public:
-    Board(int size = 21);
+    Board(string file_name, WINDOW* map, WINDOW *missionBoard, WINDOW *statusBoard);
     int loop();
     DeadCase why();
     static void initColor();
@@ -162,4 +169,12 @@ class BoardMiniumSizeException : public exception
 public:
     const char *what();
 };
+
+
+class InvalidMapException : public exception
+{
+    public:
+    const char *what();
+};
+
 #endif

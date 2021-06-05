@@ -38,13 +38,11 @@ public:
     * 
     * @param size 
     */
-    Snake(int size)
+    Snake(){ }
+    Snake(vector<Point>& sBody)
     {
-        bodyLength = 3;
-        for (int i = 0; i < 3; i++)
-        {
-            body.push_back(Point((size / 2) + i, (size / 2)));
-        }
+        body = sBody;
+        bodyLength = sBody.size();
         direct = Direct::W;
     }
 
