@@ -29,6 +29,8 @@
 #define POISON_ITEM short(6)
 #define GATE short(7)
 
+const short passAble[3] = {NONE_COLOR, GROWTH_ITEM, POISON_ITEM};
+
 /**
  * @brief Gate class
  * 

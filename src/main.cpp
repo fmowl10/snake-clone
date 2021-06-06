@@ -169,7 +169,11 @@ Main:
                 endwin();
                 return EXIT_FAILURE;
             }
-            mvprintw(row / 2, col / 2 - strlen(stageClearMessage), stageClearMessage, i + 1);
+            if (i == STAGECOUNT - 1)
+                break;
+            flushinp();
+            move(row / 2, col / 2 - strlen(stageClearMessage) / 2);
+            printw(stageClearMessage, i + 1);
             refresh();
             timeout(-1);
             getch();

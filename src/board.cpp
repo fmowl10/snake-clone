@@ -489,25 +489,25 @@ void Board::enterGate(Point &head)
         switch (user.direct)
         {
         case Direct::N:
-            if (board[exit.y - 1][exit.x] != WALL)
+            if (find(passAble, passAble + 3, board[exit.y - 1][exit.x]))
             {
                 wayout = Point(exit.x, exit.y - 1);
             }
             break;
         case Direct::S:
-            if (board[exit.y + 1][exit.x] != WALL)
+            if (find(passAble, passAble + 3, board[exit.y + 1][exit.x]))
             {
                 wayout = Point(exit.x, exit.y + 1);
             }
             break;
         case Direct::E:
-            if (board[exit.y][exit.x + 1] != WALL)
+            if (find(passAble, passAble + 3, board[exit.y][exit.x + 1]))
             {
                 wayout = Point(exit.x + 1, exit.y);
             }
             break;
         case Direct::W:
-            if (board[exit.y][exit.x - 1] != WALL)
+            if (find(passAble, passAble + 3, board[exit.y][exit.x - 1]))
             {
                 wayout = Point(exit.x - 1, exit.y);
             }
@@ -522,31 +522,108 @@ void Board::enterGate(Point &head)
             switch (user.direct)
             {
             case Direct::N:
-                if (board[exit.y][exit.x + 1] != WALL)
+                if (find(passAble, passAble + 3, board[exit.y][exit.x + 1]))
                 {
                     wayout = Point(exit.x + 1, exit.y);
                     user.changeDirect(Direct::E);
                 }
                 break;
             case Direct::S:
-                if (board[exit.y][exit.x - 1] != WALL)
+                if (find(passAble, passAble + 3, board[exit.y][exit.x - 1]))
                 {
                     wayout = Point(exit.x - 1, exit.y);
                     user.changeDirect(Direct::W);
                 }
                 break;
             case Direct::E:
-                if (board[exit.y + 1][exit.x] != WALL)
+                if (find(passAble, passAble + 3, board[exit.y + 1][exit.x]))
                 {
                     wayout = Point(exit.x, exit.y + 1);
                     user.changeDirect(Direct::S);
                 }
                 break;
             case Direct::W:
-                if (board[exit.y - 1][exit.x] != WALL)
+                if (find(passAble, passAble + 3, board[exit.y - 1][exit.x]))
                 {
                     wayout = Point(exit.x, exit.y - 1);
                     user.changeDirect(Direct::N);
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        // 역시계 방향
+        if (wayout == Point(0, 0))
+        {
+            switch (user.direct)
+            {
+            case Direct::N:
+                if (find(passAble, passAble + 3, board[exit.y][exit.x - 1]))
+                {
+                    wayout = Point(exit.x - 1, exit.y);
+                    user.changeDirect(Direct::W);
+                }
+                break;
+            case Direct::S:
+                if (find(passAble, passAble + 3, board[exit.y][exit.x + 1]))
+                {
+                    wayout = Point(exit.x + 1, exit.y);
+                    user.changeDirect(Direct::E);
+                }
+                break;
+            case Direct::E:
+                if (find(passAble, passAble + 3, board[exit.y - 1][exit.x]))
+                {
+                    wayout = Point(exit.x, exit.y - 1);
+                    user.changeDirect(Direct::N);
+                }
+                break;
+            case Direct::W:
+                if (find(passAble, passAble + 3, board[exit.y + 1][exit.x]))
+                {
+                    wayout = Point(exit.x, exit.y + 1);
+                    user.changeDirect(Direct::S);
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+        // 반대 방향
+        if (wayout == Point(0, 0))
+        {
+            switch (user.direct)
+            {
+            case Direct::N:
+                if (find(passAble, passAble + 3, board[exit.y + 1][exit.x]))
+                {
+                    wayout = Point(exit.x, exit.y + 1);
+                    user.changeDirect(Direct::S);
+                }
+                break;
+            case Direct::S:
+                if (find(passAble, passAble + 3, board[exit.y - 1][exit.x]))
+                {
+                    wayout = Point(exit.x, exit.y - 1);
+                    user.changeDirect(Direct::N);
+                }
+                break;
+            case Direct::E:
+                if (find(passAble, passAble + 3, board[exit.y][exit.x - 1]))
+                {
+                    wayout = Point(exit.x - 1, exit.y);
+                    user.changeDirect(Direct::W);
+                }
+                break;
+            case Direct::W:
+                if (find(passAble, passAble + 3, board[exit.y][exit.x + 1]))
+                {
+                    wayout = Point(exit.x + 1, exit.y);
+                    user.changeDirect(Direct::E);
                 }
                 break;
 
