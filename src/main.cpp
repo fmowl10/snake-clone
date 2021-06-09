@@ -1,4 +1,5 @@
 #include "board.h"
+#include <config.h>
 #include <cstring>
 #include <iostream>
 #include <ncurses.h>
@@ -9,6 +10,15 @@
 #define STAGECOUNT 5
 using namespace std;
 
+#ifndef DEBUG
+const string StageFile[STAGECOUNT] = {
+    "/usr/share/" + string(PROJECT_NAME_STR) + "/stage-1.map",
+    "/usr/share/" + string(PROJECT_NAME_STR) + "/stage-2.map",
+    "/usr/share/" + string(PROJECT_NAME_STR) + "/stage-3.map",
+    "/usr/share/" + string(PROJECT_NAME_STR) + "/stage-4.map",
+    "/usr/share/" + string(PROJECT_NAME_STR) + "/stage-5.map",
+};
+#else
 const string StageFile[STAGECOUNT] = {
     "stage-1.map",
     "stage-2.map",
@@ -16,6 +26,7 @@ const string StageFile[STAGECOUNT] = {
     "stage-4.map",
     "stage-5.map",
 };
+#endif
 
 const char *stageClearMessage = "you clear stage %d press any button to start next stage";
 const char *gameClearMessage = "you clear the game press any button to exit the game";

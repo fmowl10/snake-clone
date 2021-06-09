@@ -85,3 +85,10 @@ compile_commands.json
 # End of https://www.toptal.com/developers/gitignore/api/c++,meson,visualstudiocode
 
 doc/*
+
+debian/.debhelper
+debian/.snake-clone
+debian/snake-clone.substvars
+debian/files
+debian/snake-clone
+debian/debhelper-build-stamp
