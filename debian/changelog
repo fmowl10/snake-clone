@@ -1,3 +1,9 @@
+snake-clone (1.0.0-1ubuntu3) hirsute; urgency=medium
+
+  * Fix debian files
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Wed, 09 Jun 2021 14:44:06 +0900
+
 snake-clone (1.0.0-1ubuntu2) hirsute; urgency=medium
 
   * fix Section 
