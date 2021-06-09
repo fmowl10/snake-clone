@@ -1,5 +1,5 @@
 Source: snake-clone
-Section: unknown
+Section: games
 Priority: optional
 Maintainer: Jinseok Kim <jinseok1001@hotmail.com>
 Build-Depends: debhelper-compat (= 13), libncurses-dev, libncurses5-dev
