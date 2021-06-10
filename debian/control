@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Jinseok Kim <jinseok1001@hotmail.com>
 Build-Depends: debhelper-compat (= 13), libncurses-dev, libncurses5-dev
 Standards-Version: 4.5.1
-#Vcs-Browser: https://github.com/fmowl10/snake-clone
+Vcs-Browser: https://github.com/fmowl10/snake-clone
 Vcs-Git: https://gihtub.com/fmowl10/snake-clone.git
 Rules-Requires-Root: no
 
