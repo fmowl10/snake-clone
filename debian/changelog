@@ -1,3 +1,21 @@
+snake-clone (1.0.1-1ubuntu4) hirsute; urgency=medium
+
+  * add build dependency 
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Fri, 11 Jun 2021 06:58:19 +0900
+
+snake-clone (1.0.1-1ubuntu3) hirsute; urgency=medium
+
+  * build 
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Fri, 11 Jun 2021 06:47:35 +0900
+
+snake-clone (1.0.1-1ubuntu2) hirsute; urgency=medium
+
+  * reupload
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Fri, 11 Jun 2021 06:25:46 +0900
+
 snake-clone (1.0.1-1ubuntu1) hirsute; urgency=medium
 
   * Fix control file
