@@ -1,3 +1,15 @@
+snake-clone (1.0.1-1ubuntu6) impish; urgency=medium
+
+  * fix package
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Wed, 23 Mar 2022 03:51:14 +0900
+
+snake-clone (1.0.1-1ubuntu5) impish; urgency=medium
+
+  * add support
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Wed, 23 Mar 2022 03:45:29 +0900
+
 snake-clone (1.0.1-1ubuntu4) hirsute; urgency=medium
 
   * add build dependency 
