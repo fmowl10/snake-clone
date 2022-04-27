@@ -10,5 +10,5 @@ Rules-Requires-Root: no
 
 Package: snake-clone
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libncurses5
 Description: snake-clone for Kookmin university C++ project
