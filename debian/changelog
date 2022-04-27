@@ -1,3 +1,9 @@
+snake-clone (1.0.1-2ubuntu1) focal; urgency=medium
+
+  * update debian packaging files
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Wed, 27 Apr 2022 12:49:55 +0900
+
 snake-clone (1.0.1-1ubuntu7) focal; urgency=medium
 
   * add focal
