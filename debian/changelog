@@ -1,8 +1,12 @@
-snake-clone (1.0.3) UNRELEASED; urgency=medium
+snake-clone (1.0.4) UNRELEASED; urgency=medium
 
+  [ Jinseok Kim ]
   * build-receipe
 
- -- Jinseok Kim <fmowl-wsl@FmowlPC.localdomain>  Wed, 27 Apr 2022 13:46:11 +0900
+  [ fmowl10 ]
+  * Clean debian branch
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Tue, 03 May 2022 21:26:03 +0900
 
 snake-clone (1.0.1-2ubuntu1) focal; urgency=medium
 
