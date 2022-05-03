@@ -94,7 +94,8 @@ int main(int argc, char const *argv[])
         if (KONAMICOMMAND[KONAMIINDEX] == ch)
         {
             KONAMIINDEX++;
-            mvprintw(row / 2 + 4, col / 2 - KONAMICOMMAND.size() / 2 + KONAMIINDEX, "0");
+            move(row / 2 + 4, col / 2 - KONAMICOMMAND.size() / 2 + KONAMIINDEX);
+            addstr("0");
         }
         else
         {
@@ -106,8 +107,10 @@ int main(int argc, char const *argv[])
         if (KONAMIINDEX == KONAMICOMMAND.size())
         {
             clear();
-            mvprintw(row / 2, col / 2 - strlen(KONAMICOMMANDMESSAGE) / 2, KONAMICOMMANDMESSAGE);
-            mvprintw(row / 2 + 1, col / 2 - strlen(chooseStageMessage) / 2, chooseStageMessage);
+            move(row / 2, col / 2 - strlen(KONAMICOMMANDMESSAGE) / 2);
+            addstr(KONAMICOMMANDMESSAGE);
+            move(row / 2 + 1, col / 2 - strlen(chooseStageMessage) / 2);
+            addstr(chooseStageMessage);
             refresh();
             while (true)
             {

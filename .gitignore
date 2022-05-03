@@ -74,7 +74,8 @@ compile_commands.json
 *.code-workspace
 
 ###meson builddir###
-.builddir/*
+builddir
+obj-x86_64-linux-gnu
 *.code-workspace
 
 ### VisualStudioCode Patch ###
