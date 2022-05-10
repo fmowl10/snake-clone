@@ -59,7 +59,7 @@ public:
      * @param v
      * @param t
      */
-    Gate(Point g1, Point g2, int v, int t) : gateV(0), tick(t)
+    Gate(Point g1, Point g2, int v, int t) : tick(t), gateV(v)
     {
         gatePoints[0] = g1;
         gatePoints[1] = g2;

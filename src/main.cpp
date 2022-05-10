@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
     vector<int> KONAMICOMMAND = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, int('b'), int('a')};
 
     int i = 0;
-    int KONAMIINDEX = 0;
+    long unsigned int KONAMIINDEX = 0;
     string welcome_message[MESSAGECOUNT] = {
         "welcome this is snake game",
         "click this text to start or press s",
