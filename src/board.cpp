@@ -1,12 +1,12 @@
 /**
  * @file board.cpp
  * @author kim jea ha, kim jin seok
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-05-29
- * 
+ *
  * @copyright Copyright (c) 2021 cocozo fmowl
- * 
+ *
  */
 #include "board.h"
 #include "mission.h"
@@ -22,10 +22,10 @@
 using namespace chrono;
 
 /**
- * @brief operator 
- * 
- * @param item 
- * @return Item& 
+ * @brief operator
+ *
+ * @param item
+ * @return Item&
  */
 Item &Item::operator=(const Item &item)
 {
@@ -37,8 +37,8 @@ Item &Item::operator=(const Item &item)
 
 /**
  * @brief returns exception message
- * 
- * @return const char* 
+ *
+ * @return const char*
  */
 const char *BoardMiniumSizeException::what()
 {
@@ -47,8 +47,8 @@ const char *BoardMiniumSizeException::what()
 
 /**
  * @brief returns exception message
- * 
- * @return const char* 
+ *
+ * @return const char*
  */
 const char *InvalidMapException::what()
 {
@@ -59,7 +59,7 @@ bool Board::isInitColor = false;
 
 /**
  * @brief singletone method
- * 
+ *
  */
 void Board::initColor()
 {
@@ -81,8 +81,8 @@ void Board::initColor()
 
 /**
  * @brief Construct a new Board:: Board object
- * 
- * @param size 
+ *
+ * @param size
  */
 Board::Board(string file_name, WINDOW *map, WINDOW *missionBoard, WINDOW *statusBoard) : map(map), missionBoard(missionBoard), statusBoard(statusBoard)
 {
@@ -168,8 +168,8 @@ Board::Board(string file_name, WINDOW *map, WINDOW *missionBoard, WINDOW *status
 
 /**
  * @brief get input from user
- * 
- * @return int 
+ *
+ * @return int
  */
 int Board::loop()
 {
@@ -233,9 +233,9 @@ int Board::loop()
 
 /**
  * @brief event handler
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
 bool Board::update()
 {
@@ -300,7 +300,7 @@ bool Board::update()
 
 /**
  * @brief print current state
- * 
+ *
  */
 void Board::print()
 {
@@ -342,13 +342,13 @@ void Board::print()
     box(statusBoard, 0, 0);
     box(missionBoard, 0, 0);
 
-    mvwprintw(statusBoard, 0, 1, "Score Board");
+    mvwprintw(statusBoard, 0, 1, "%s", "Score Board");
     mvwprintw(statusBoard, 1, 1, "B : %2d/%d", user.bodyLength, stageClear.currentMax);
     mvwprintw(statusBoard, 2, 1, "+ : %2d", stageClear.consumedGrowthItem);
     mvwprintw(statusBoard, 3, 1, "- : %2d", stageClear.consumedPoisonItem);
     mvwprintw(statusBoard, 4, 1, "G : %2d", stageClear.GatePassed);
 
-    mvwprintw(missionBoard, 0, 1, "Mission");
+    mvwprintw(missionBoard, 0, 1, "%s", "Mission");
     mvwprintw(missionBoard, 1, 1, "B : %2d (%c)", stageClear.getMaxBodyLength(), stageClear.isPassMaxBodyLength() ? 'v' : ' ');
     mvwprintw(missionBoard, 2, 1, "+ : %2d (%c)", stageClear.getNumberGrothItem(), stageClear.isPassGrowthItem() ? 'v' : ' ');
     mvwprintw(missionBoard, 3, 1, "- : %2d (%c)", stageClear.getNumberPoisonItem(), stageClear.isPassPoisonItem() ? 'v' : ' ');
@@ -361,8 +361,8 @@ void Board::print()
 
 /**
  * @brief returns snake deadcase
- * 
- * @return DeadCase 
+ *
+ * @return DeadCase
  */
 DeadCase Board::why()
 {
@@ -371,8 +371,8 @@ DeadCase Board::why()
 
 /**
  * @brief create item
- * 
- * @param num 
+ *
+ * @param num
  */
 void Board::createItem(int num)
 {
@@ -401,8 +401,8 @@ void Board::createItem(int num)
 
 /**
  * @brief consume item
- * 
- * @param num 
+ *
+ * @param num
  */
 void Board::consumeItem(int num)
 {
@@ -428,7 +428,7 @@ void Board::consumeItem(int num)
 
 /**
  * @brief consume item tick
- * 
+ *
  */
 void Board::consumeItemTick()
 {
@@ -450,8 +450,8 @@ void Board::consumeItemTick()
 
 /**
  * @brief set snake's way out and direction
- * 
- * @param head 
+ *
+ * @param head
  */
 void Board::enterGate(Point &head)
 {
@@ -516,7 +516,7 @@ void Board::enterGate(Point &head)
             break;
         }
 
-        //user의 방향대로 나갈 수 없을 경우, 시계방향으로 회전
+        // user의 방향대로 나갈 수 없을 경우, 시계방향으로 회전
         if (wayout == Point(0, 0))
         {
             switch (user.direct)
@@ -638,8 +638,8 @@ void Board::enterGate(Point &head)
 
 /**
  * @brief create gate
- * 
- * @param tick 
+ *
+ * @param tick
  */
 void Board::createGate(int tick)
 {
@@ -654,8 +654,8 @@ void Board::createGate(int tick)
 }
 
 /**
- * @brief consume gate's tick 
- * 
+ * @brief consume gate's tick
+ *
  */
 void Board::consumeGateTick()
 {

@@ -205,7 +205,8 @@ Main:
         cout << e.what() << endl;
         return EXIT_FAILURE;
     }
-    mvprintw(row / 2, col / 2 - strlen(gameClearMessage) / 2, gameClearMessage);
+    move(row / 2, col / 2 - strlen(gameClearMessage) / 2);
+    addstr(gameClearMessage);
     refresh();
     timeout(-1);
     getch();
