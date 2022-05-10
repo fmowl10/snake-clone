@@ -1,12 +1,12 @@
 /**
  * @file snake.h
- * @author kim jae ha 
- * @brief snake class 
+ * @author kim jae ha
+ * @brief snake class
  * @version 0.1
  * @date 2021-05-30
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 #include "direct.h"
 #include "point.h"
@@ -21,7 +21,7 @@ using namespace std;
 
 /**
  * @brief Snake class
- * 
+ *
  */
 class Snake
 {
@@ -34,12 +34,12 @@ private:
 
 public:
     /**
-    * @brief Construct a new Snake object
-    * 
-    * @param size 
-    */
-    Snake(){ }
-    Snake(vector<Point>& sBody)
+     * @brief Construct a new Snake object
+     *
+     * @param size
+     */
+    Snake() {}
+    Snake(vector<Point> &sBody)
     {
         body = sBody;
         bodyLength = sBody.size();

@@ -1,12 +1,12 @@
 /**
  * @file direct.h
  * @author Kim Jae Ha Kim Jin Seok
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-05-30
- * 
+ *
  * @copyright Copyright (c) 2021 cocozo fmowl
- * 
+ *
  */
 #include <iostream>
 #include <ncurses.h>
@@ -15,7 +15,7 @@
 #define __DIRECT_H__
 /**
  * @brief direction enum
- * 
+ *
  */
 enum Direct
 {

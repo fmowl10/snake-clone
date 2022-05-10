@@ -1,12 +1,12 @@
 /**
  * @file board.h
  * @author Kim Jae Ha Kim Jin Seok
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-05-30
- * 
+ *
  * @copyright Copyright (c) 2021 cocozo fmowl
- * 
+ *
  */
 
 #include <exception>
@@ -33,7 +33,7 @@ const short passAble[3] = {NONE_COLOR, GROWTH_ITEM, POISON_ITEM};
 
 /**
  * @brief Gate class
- * 
+ *
  */
 class Gate
 {
@@ -43,9 +43,9 @@ class Gate
 
 public:
     /**
-    * @brief Construct a new Gate object
-    * 
-    */
+     * @brief Construct a new Gate object
+     *
+     */
     Gate()
     {
         gateV = 0;
@@ -53,11 +53,11 @@ public:
     }
     /**
      * @brief Construct a new Gate object
-     * 
-     * @param g1 
-     * @param g2 
-     * @param v 
-     * @param t 
+     *
+     * @param g1
+     * @param g2
+     * @param v
+     * @param t
      */
     Gate(Point g1, Point g2, int v, int t) : gateV(0), tick(t)
     {
@@ -67,10 +67,10 @@ public:
 
     /**
      * @brief check is exit
-     * 
-     * @param p 
-     * @param len 
-     * @return Point 
+     *
+     * @param p
+     * @param len
+     * @return Point
      */
     Point checkExit(Point p, int len)
     {
@@ -86,7 +86,7 @@ public:
 
 /**
  * @brief Item class
- * 
+ *
  */
 class Item
 {
@@ -96,10 +96,10 @@ class Item
 public:
     /**
      * @brief Construct a new Item object
-     * 
-     * @param point 
-     * @param v 
-     * @param t 
+     *
+     * @param point
+     * @param v
+     * @param t
      */
     Item(Point point, int v, int t = 20) : p(point), itemV(v), tick(t) {}
     Item()

@@ -1,19 +1,19 @@
 /**
  * @file snake.cpp
  * @author Kim Jae Ha Kim Jin Seok
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-05-30
- * 
+ *
  * @copyright Copyright (c) 2021 cocozo fmowl
- * 
+ *
  */
 #include "snake.h"
 #include <iostream>
 
 /**
  * @brief move snake body by direct
- * 
+ *
  */
 void Snake::move()
 {
@@ -51,7 +51,7 @@ void Snake::move()
 
 /**
  * @brief add snake body from tail
- * 
+ *
  */
 void Snake::growthBody()
 {
@@ -61,7 +61,7 @@ void Snake::growthBody()
 
 /**
  * @brief remove snake body from tail
- * 
+ *
  */
 void Snake::decreaseBody()
 {
@@ -71,9 +71,9 @@ void Snake::decreaseBody()
 
 /**
  * @brief check snake condition is dead
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
 bool Snake::isDead()
 {

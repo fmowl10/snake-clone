@@ -1,19 +1,19 @@
 /**
  * @file mission.h
  * @author kim jea ha kim jin seok
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2021-06-05
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 #ifndef __MISSION_H__
 #define __MISSION_H__
 
 /**
  * @brief mission class
- * 
+ *
  */
 class Mission
 {
@@ -31,11 +31,11 @@ public:
 
     /**
      * @brief Construct a new Mission object
-     * 
-     * @param bodyLength 
-     * @param grothItem 
-     * @param poisonItem 
-     * @param gate 
+     *
+     * @param bodyLength
+     * @param grothItem
+     * @param poisonItem
+     * @param gate
      */
     Mission(int bodyLength = 0, int grothItem = 0, int poisonItem = 0, int gate = 0) : MaxBodyLength(bodyLength), NumberGrowthItem(grothItem), NumberPoisonItem(poisonItem), NumberGate(gate)
     {
@@ -47,9 +47,9 @@ public:
 
     /**
      * @brief returns is consumeGroth greater than NUmberGrothItem
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool isPassGrowthItem()
     {
@@ -58,9 +58,9 @@ public:
 
     /**
      * @brief returns is consumedPoisonItem greater than NumberPoisonItem
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool isPassPoisonItem()
     {
@@ -69,9 +69,9 @@ public:
 
     /**
      * @brief returns is GatePassed greater than NumberGate
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool isPassNumberGate()
     {
@@ -80,9 +80,9 @@ public:
 
     /**
      * @brief returns is currentMax greater than MaxBodyLength
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool isPassMaxBodyLength()
     {
@@ -91,9 +91,9 @@ public:
 
     /**
      * @brief return clear condition
-     * 
-     * @return true 
-     * @return false 
+     *
+     * @return true
+     * @return false
      */
     bool isClear()
     {
@@ -106,8 +106,8 @@ public:
 
     /**
      * @brief Get the Max Body Length object
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int getMaxBodyLength()
     {
@@ -116,8 +116,8 @@ public:
 
     /**
      * @brief Get the Number Groth Item object
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int getNumberGrothItem()
     {
@@ -126,8 +126,8 @@ public:
 
     /**
      * @brief Get the Number Poison Item object
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int getNumberPoisonItem()
     {
@@ -136,8 +136,8 @@ public:
 
     /**
      * @brief Get the Number Gate object
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int getNumberGate()
     {
