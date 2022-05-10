@@ -1,6 +1,7 @@
 snake-clone (1.0.6) UNRELEASED; urgency=medium
 
-   * Fix code and debian packaging files
+  * Fix code and debian packaging files
+  * Fix meson.build 
 
  -- Jinseok Kim <jinseok1001@hotmail.com>  Tue, 10 May 2022 22:10:54 +0900
 
