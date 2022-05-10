@@ -1,3 +1,9 @@
+snake-clone (1.0.6) UNRELEASED; urgency=medium
+
+   * Fix code and debian packaging files
+
+ -- Jinseok Kim <jinseok1001@hotmail.com>  Tue, 10 May 2022 22:10:54 +0900
+
 snake-clone (1.0.5) UNRELEASED; urgency=medium
 
    * Fix code debian packaging files
